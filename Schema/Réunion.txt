@@ -1,0 +1,4 @@
+Notes réuninon mémoire  31/10/22
+
+Objectif: avoir une première version de l'architecture de la database. 
+PostJS (stockage des données). Récupération donnée exif
