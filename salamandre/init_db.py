@@ -1,31 +1,40 @@
+
+from geoalchemy2 import Geometry
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from geoalchemy2 import Geometry
+from salamandre.img import getimgfromjs
 
-app = Flask(__name__)
 db = SQLAlchemy()
+
+
+
 
 class Pictures (db.Model):
     __tablename__ = 'Pictures'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(30))
-    file = db.Column(db.Blob)
+    filename = db.Column(db.String(50))
+    file = db.Column(db.bytea)
     longitude = db.Column(db.Float)
     latitude = db.Column(db.Float)
     geo = db.Column(Geometry(geometry_type="POINT"))
     focal = db.Column(db.Integer)
+    date = db.Column(db.Date)
 
     @classmethod
-    def add_city(cls, name, longitude, latitude):
+    def add_pictures(cls, filename, file, longitude, latitude, focal, date):
         """Put a new city in the database."""
 
         geo = 'POINT({} {})'.format(longitude, latitude)
-        data = Pictures(name=name,
+        data = Pictures(filename=filename,
+                        file = file,
                            longitude=longitude,
                            latitude=latitude,
-                          geo=geo)
+                          geo=geo,
+                        focal = focal,
+                        date = date)
 
         db.session.add(data)
         db.session.commit()
@@ -40,7 +49,7 @@ class Pictures (db.Model):
             point = 'POINT({} {})'.format(p.longitude, p.latitude)
             p.geo = point
 
-        db.session.commit(
+        db.session.commit()
 """
 #see on https://www.digitalocean.com/community/tutorials/how-to-use-a-postgresql-database-in-a-flask-application on 30/03/23
 
