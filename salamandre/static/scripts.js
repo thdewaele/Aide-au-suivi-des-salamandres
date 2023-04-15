@@ -38,62 +38,30 @@ document.addEventListener('DOMContentLoaded',(ev)=> {
                     //console.log('display =1 ');
                 }
             }
-
-    /*
-
-            var file= pict;
-            var filename = file.name;
-            var data = new FormData();
-            data.append(filename,file)
-             makePostRequest('http://127.0.0.1:5000/img', data,{
-                headers:{
-                    'accept': 'application/json',
-                    'Content-Type': 'multipart/form-data; boundary = ${data._boundary}',
-                }
-            })
-
-
-     */
-
-
-
-
-
-            /**
-            let data = new FormData();
-            data.append('file',file);
-            let filename = file.name;
-            console.log(filename);
-            makePostRequest('http://127.0.0.1:5000/img', {filename, data},{
-                headers:{
-                    'accept': 'application/json',
-                    'Content-Type': 'multipart/form-data; boundary = ${data._boundary}',
-                }
-            })
-             **/
-
         }
-
-
-
     })
 })
 
+var lat = 0;
+var long = 0;
 BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/img', 'photo', function(response){
-    console.log("dedans")
     var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
+    lat = anwser['lat'];
+    long = anwser['long'];
     console.log(anwser);
 });
-console.log("after send");
+
 
 // Based on this video https://dev.to/thedevdrawer/geolocation-tutorial-get-user-location-using-vanilla-js-46a on 25/10/2022
     class Geolocation {
-        succesCallBack(position) {
 
-            let mapContainer = document.querySelector("#map")
+
+        showPosition() {
+            if (lat !==0 && long !==0){
+                let mapContainer = document.querySelector("#map")
             mapContainer.style.display = "block"
 
-            const map = L.map("map").setView([position.coords.latitude, position.coords.longitude], 13)
+            const map = L.map("map").setView([lat, long], 13)
             const tiles = L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
@@ -103,32 +71,9 @@ console.log("after send");
                 }
             ).addTo(map)
 
-            const marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map)
-        }
-
-        errorCallBack(error) {
-            let result = document.querySelector("#result")
-            result.style.display = "block"
-            if (error.code == 1) {
-                result.innerText = "Vous n'avez pas permis d'acceder à votre position"
-            } else if (error.code == 2) {
-                result.innerText = "Votre localisation n'est pas disponible"
-            } else if (error.code == 3) {
-                result.innerText = "Timeout"
+            const marker = L.marker([lat, long]).addTo(map)
             } else {
-                result.innerText = "Erreur inconnue"
-            }
-
-        }
-
-        showPosition() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    this.succesCallBack,
-                    this.errorCallBack
-                )
-            } else {
-                alert("Votre navigateur ne supporte pas la géalocalisation")
+                alert("Les données GPS ne sont pas présentes dans le header de la photo")
             }
         }
     }
