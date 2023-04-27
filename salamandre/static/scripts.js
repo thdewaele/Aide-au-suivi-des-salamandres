@@ -51,6 +51,12 @@ BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/img', 'photo
     console.log(anwser);
 });
 
+BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'photo', function(response){
+    var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
+    console.log(anwser);
+});
+
+
 
 // Based on this video https://dev.to/thedevdrawer/geolocation-tutorial-get-user-location-using-vanilla-js-46a on 25/10/2022
     class Geolocation {

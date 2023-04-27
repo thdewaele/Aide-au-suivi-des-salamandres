@@ -1,17 +1,14 @@
 import cv2
 from flask import Blueprint
 
-bp = Blueprint('template', __name__, url_prefix='')
-@bp.route('/template', methods=['POST'])
 def get_coordPiece(filename, piece):
     img = cv2.imread(filename)
     img2 = img.copy()
 
     img2 = cv2.cvtColor(img2,cv2.COLOR_BGR2RGB)
-    if (piece == 1):
-        template = cv2.imread('1eurodet.png',0)
-    elif (piece == 2):
-        template = cv2.imread('2euro_det.png',0)
+    template = cv2.imread('1euro.png',0)
+    if (piece == 2):
+        template = cv2.imread('test.png',0)
     elif(piece == 3):
         template = cv2.imread('0.5euro_det.png',0)
     rgb = cv2.cvtColor(template,cv2.COLOR_BGR2RGB)
@@ -22,8 +19,9 @@ def get_coordPiece(filename, piece):
                 'cv2.TM_CCORR_NORMED', 'cv2.TM_SQDIFF', 'cv2.TM_SQDIFF_NORMED']
 
 
-
-    method =cv2.TM_CCORR
+    method = cv2.TM_CCORR
+    if (piece==2):
+        method =cv2.TM_SQDIFF
     # Apply template Matching
     res = cv2.matchTemplate(img2, rgb, method)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -33,6 +31,7 @@ def get_coordPiece(filename, piece):
     else:
         top_left = max_loc
     bottom_right = (top_left[0] + w, top_left[1] +h)
+
     cv2.rectangle(img, top_left, bottom_right, (255,255,0), 5)
 
     cv2.namedWindow("Detect", cv2.WINDOW_NORMAL)
@@ -42,7 +41,7 @@ def get_coordPiece(filename, piece):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    get_coordPiece("20230319_195622008_iOS.jpg",2)
+    get_coordPiece("IMG_0962.jpg",1)
 
 
 """

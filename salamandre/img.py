@@ -1,15 +1,12 @@
 import json
-import os
 import tempfile
-
-from pylibjpeg import decode
 from flask import request, Blueprint, Response
 from GPSPhoto import gpsphoto
-from PIL import Image
 from werkzeug.utils import secure_filename
 
+"""
 bp = Blueprint('img', __name__, url_prefix='')
-
+"""
 
 def get_gpsinfo(img):
     print("Image: ", img)
@@ -22,6 +19,10 @@ def get_gpsinfo(img):
         latitude = 0
         longitude = 0
     return latitude, longitude
+
+bp = Blueprint('img', __name__, url_prefix='')
+
+
 
 
 @bp.route('/img', methods=['POST'])
@@ -39,9 +40,30 @@ def getimgfromjs():
         'long' : long,
         'filename': filename
     }
+
     return Response(json.dumps(answer), mimetype='application/json')
 
+"""
+@bp.route('/img', methods=['POST'])
+def getimgfromjs():
+    dataset = request.files['photo']
+    filename = secure_filename(dataset.name)
+    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp:
+        dataset.save(temp.name)
+
+        # Process the image using the temporary file
+        lat,long = get_gpsinfo(temp.name)
+    print(lat,long)
+    answer = {
+        'lat' :lat,
+        'long' : long,
+        'filename': filename
+    }
+    add_pictures(dataset.name, temp,long,lat,0)
+    return Response(json.dumps(answer), mimetype='application/json')
     """
+
+"""
      if 'file' in request.files:
        photo = request.files['file']
        if photo.filename != '':
@@ -67,7 +89,7 @@ def getimgfromjs():
     return Response(json.dumps(answer), mimetype='application/json')
  
     """
-    """
+"""
      dataset = request.files
      list1 = list(dataset.items())
      filename = str(list1[0])
@@ -77,7 +99,7 @@ def getimgfromjs():
      return Response(json.dumps(answer), mimetype='application/json')
      """
 
-    """
+"""
     data = request.get_json(silent=True)
     filename = data.get('filename')
     print(filename)

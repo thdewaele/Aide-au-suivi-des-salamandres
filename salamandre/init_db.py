@@ -1,55 +1,25 @@
 
 from geoalchemy2 import Geometry
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from geoalchemy2 import Geometry
 from salamandre.img import getimgfromjs
+from flask import current_app, g
+bp = Blueprint('db', __name__, url_prefix='')
+def init_db():
+    db = get_db()
 
-db = SQLAlchemy()
+def get_db():
+    if 'db' not in g:
+        g.db = SQLAlchemy(current_app)
+        current_app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:19992bbL@localhost/Salamandre_webapp'
+        current_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        current_app.secret_key = 'secret string'
 
 
 
 
-class Pictures (db.Model):
-    __tablename__ = 'Pictures'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    filename = db.Column(db.String(50))
-    file = db.Column(db.bytea)
-    longitude = db.Column(db.Float)
-    latitude = db.Column(db.Float)
-    geo = db.Column(Geometry(geometry_type="POINT"))
-    focal = db.Column(db.Integer)
-    date = db.Column(db.Date)
-
-    @classmethod
-    def add_pictures(cls, filename, file, longitude, latitude, focal, date):
-        """Put a new city in the database."""
-
-        geo = 'POINT({} {})'.format(longitude, latitude)
-        data = Pictures(filename=filename,
-                        file = file,
-                           longitude=longitude,
-                           latitude=latitude,
-                          geo=geo,
-                        focal = focal,
-                        date = date)
-
-        db.session.add(data)
-        db.session.commit()
-
-    @classmethod
-    def update_geometries(cls):
-        """Using each city's longitude and latitude, add geometry data to db."""
-
-        pict = Pictures.query.all()
-
-        for p in pict:
-            point = 'POINT({} {})'.format(p.longitude, p.latitude)
-            p.geo = point
-
-        db.session.commit()
 """
 #see on https://www.digitalocean.com/community/tutorials/how-to-use-a-postgresql-database-in-a-flask-application on 30/03/23
 
