@@ -9,9 +9,7 @@ bp = Blueprint('img', __name__, url_prefix='')
 """
 
 def get_gpsinfo(img):
-    print("Image: ", img)
     data = gpsphoto.getGPSData(img)
-    print(data)
     if (data):
         latitude = data['Latitude']
         longitude = data['Longitude']
@@ -34,7 +32,6 @@ def getimgfromjs():
 
         # Process the image using the temporary file
         lat,long = get_gpsinfo(temp.name)
-    print(lat,long)
     answer = {
         'lat' :lat,
         'long' : long,

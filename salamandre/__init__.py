@@ -15,6 +15,8 @@ from salamandre.index import index
 
 
 db = SQLAlchemy()
+size = 0
+
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
@@ -22,7 +24,8 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = 'secret string'
 
-    db = SQLAlchemy(app)
+    db.init_app(app)
+
 
 
     if test_config is None:
@@ -35,9 +38,12 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+
+
     @app.route('/')
     def init():
         return index()
+
 
     @app.route('/addpict', methods=['POST'])
     def add_pictures():
@@ -46,12 +52,13 @@ def create_app(test_config=None):
         with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp:
             dataset.save(temp.name)
 
+
         latitude, longitude = get_gpsinfo(temp.name)
         file = temp.name
-        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, 0)
-
+        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, 0,size)
         db.session.add(data)
         db.session.commit()
+
         answer = {
             'lat': latitude,
             'long': longitude,
@@ -61,11 +68,31 @@ def create_app(test_config=None):
         return Response(json.dumps(answer), mimetype='application/json')
 
 
+    @app.route ('/addtaille', methods = ['POST'])
+    def add_taille():
+        dataset = request.get_json()
+        print(dataset)
+        taille = dataset.get('size')
+        derniere_ligne = Pictures.query.order_by(Pictures.id.desc()).first()
+        derniere_ligne.size = taille
+        db.session.commit()
+        size = float(taille)
+        print(taille)
+        answer ={
+            'size': taille
+        }
+        return Response(json.dumps(answer), mimetype='application/json')
+
+
+
+
+
     from . import img
     app.register_blueprint(img.bp)
 
     #db.create_all()
     return app
+
 
 
 
@@ -82,8 +109,9 @@ class Pictures (db.Model):
     geo = db.Column(Geometry(geometry_type="POINT"))
     focal = db.Column(db.Integer)
     date = db.Column(db.Date)
+    size = db.Column(db.Float)
 
-    def __init__(self, filename, file, longitude, latitude, focal,date):
+    def __init__(self, filename, file, longitude, latitude, focal,date, size):
         self.filename = filename
         self.file = file
         self.longitude =longitude
@@ -91,6 +119,7 @@ class Pictures (db.Model):
         self.focal = focal
         self.data = date
         self.geo = 'POINT ({} {})'.format(longitude,latitude)
+        self.size = size
 
 
 

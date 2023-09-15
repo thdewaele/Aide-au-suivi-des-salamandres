@@ -1,7 +1,7 @@
 // Based on : https://medium.com/front-end-weekly/draw-an-image-in-canvas-using-javascript-%EF%B8%8F-2f75b7232c63 consulté le 20/02/23
 
 var imagedisplay = 0;
-
+var test = 0;
 
 function makePostRequest(path, queryObj){
     axios.post(path,queryObj).then(
@@ -15,6 +15,8 @@ function makePostRequest(path, queryObj){
     );
 
 }
+
+var name = null;
 document.addEventListener('DOMContentLoaded',(ev)=> {
 
     let input = document.getElementById('capture');
@@ -22,6 +24,7 @@ document.addEventListener('DOMContentLoaded',(ev)=> {
     input.addEventListener('change', async (ev) => {
         if (ev.target.files) {
             let pict = ev.target.files[0];
+            name = pict;
             var reader = new FileReader();
             reader.readAsDataURL(pict);
             var canvas = document.getElementById('canvas');
@@ -44,17 +47,17 @@ document.addEventListener('DOMContentLoaded',(ev)=> {
 
 var lat = 0;
 var long = 0;
-BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/img', 'photo', function(response){
+
+
+
+BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'photo', function (response) {
     var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
+    console.log(anwser);
     lat = anwser['lat'];
     long = anwser['long'];
-    console.log(anwser);
 });
 
-BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'photo', function(response){
-    var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
-    console.log(anwser);
-});
+
 
 
 
@@ -89,13 +92,14 @@ showPosition.addEventListener("click", function (e) {
     e.preventDefault()
     new Geolocation().showPosition()
 })
+
 var a = 0;
 var b = 0;
 var points = [];
 points.push([a, b]);
 var points2 =[];
 points2.push([a, b]);
-var test = 0;
+
 var dist = 0;
 var taillepiece =0;
 var type = 0;
@@ -187,7 +191,7 @@ drawpiece.addEventListener("click", function(e){
     }
 })
 
-const drawpiecefin = document.querySelector("#drawpiecefin")
+const drawpiecefin = document.querySelector("#drawpiecefin");
 drawpiecefin.addEventListener("click",function (e){
     test = 4;
     const taille_pixel_piece = taillepiece;
@@ -202,12 +206,20 @@ drawpiecefin.addEventListener("click",function (e){
         piece = 1;
     }
     //console.log('taille en pixel sal', taille_pixel_sal);
-    if (dist !==0){
-        var pixel_cm = taille_pixel_piece/piece;
+    if (dist !==0) {
+        var pixel_cm = taille_pixel_piece / piece;
         console.log("1 cm = pixel ", pixel_cm);
-        var taille_salamandre = taille_pixel_sal/pixel_cm;
+        var taille_salamandre = taille_pixel_sal / pixel_cm;
         var taille_cm = taille_salamandre.toPrecision(5);
         console.log("Taille salamandre en cm: ", taille_salamandre);
         document.getElementById("taille").innerHTML = "Estimation de la taille de la salamandre en cm: " + taille_cm;
+        const taille = taille_cm;
+        axios.post('http://127.0.0.1:5000/addtaille', {
+            size: taille
+        })
+        .then((response) => {
+            console.log(response);
+        });
+
     }
-})
+});

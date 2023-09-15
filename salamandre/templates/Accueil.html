@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+        <meta charset="UFT-8">
+        <title>Photo de salamandre</title>
+        <meta name = "viewport" content="width = device -width">
+        <link rel="stylesheet" href="../static/style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"/>
+        <style>
+            p>img{
+                max-width : 80%;
+            }
+        </style>
 
+    </head>
+  <br>
+        <header>
+            <h1><center>Aide au suivi des salamandre</center></h1>
+
+        </header>
+<main>
+  <br>
+      Cette web-app vous permet de prendre ou d'uploader une photo de la salamandre afin de mesurer celle-ci et de recuperer sa localisation afin de pouvoir suivre la population.
+        </br>
+      Consignes d'utilisation:</br>
+
+      - Placez une piece de 0,5 ou 1 ou 2 euros de maniere bien visible a cote de la salamandre.</br>
+      -Assurez-vous que la salamandre est bien visible.</br>
+        - Si vous uploadez juste la photo apres l'avoir prise, appuyez sur le bouton selectionner un fichier. Le format du fichier doit être jpeg ou jpg.   </br>
+        - Dans le cas ou vous prenez directement la photo, une fois que vous aurez appuyer sur le bouton selectionner un fichier, votre appareil photo s'ouvrira</br>
+        - Afin de correctement identifier la salamandre, assurez-vous de bien suivre sa colonne vertebrale en partant du bout du museau et en allant jusqu'au bout de la queue. </br>
+        -Assurez-vous egalement d'identifier la piece le plus precisement possible. </br>
+    <center>
+     <button type="button" id="goindex">Uploader un fichier</button>
+    </center>
+
+</main>
+ <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src ="../static/BestRendering.js"></script>
+        <script src="../static/scripts2.js"></script>
 </body>
 </html>
