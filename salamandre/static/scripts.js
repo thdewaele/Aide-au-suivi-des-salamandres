@@ -213,6 +213,7 @@ drawpiecefin.addEventListener("click",function (e){
         var taille_cm = taille_salamandre.toPrecision(5);
         console.log("Taille salamandre en cm: ", taille_salamandre);
         document.getElementById("taille").innerHTML = "Estimation de la taille de la salamandre en cm: " + taille_cm;
+        document.getElementById("ajoutdb").innerHTML ="Votre photo a bien été ajouté à la base de données";
         const taille = taille_cm;
         axios.post('http://127.0.0.1:5000/addtaille', {
             size: taille
@@ -223,3 +224,4 @@ drawpiecefin.addEventListener("click",function (e){
 
     }
 });
+

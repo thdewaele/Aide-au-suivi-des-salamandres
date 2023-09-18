@@ -10,6 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2 import Geometry
 from werkzeug.utils import secure_filename
 
+import salamandre
+from salamandre.accueil import accueil
 from salamandre.img import get_gpsinfo
 from salamandre.index import index
 
@@ -18,7 +20,7 @@ db = SQLAlchemy()
 size = 0
 
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True, static_folder="static", static_url_path="/static")
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:doisneau@localhost/Salamandre_webapp'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -42,7 +44,11 @@ def create_app(test_config=None):
 
     @app.route('/')
     def init():
-        return index()
+        return accueil()
+
+    @app.route('/index.html')
+    def index():
+        return salamandre.index()
 
 
     @app.route('/addpict', methods=['POST'])
