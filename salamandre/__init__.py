@@ -50,6 +50,10 @@ def create_app(test_config=None):
     def index():
         return salamandre.index()
 
+    @app.route('/donnee.html')
+    def donnee():
+        return salamandre.donnee()
+
 
     @app.route('/addpict', methods=['POST'])
     def add_pictures():
@@ -88,6 +92,14 @@ def create_app(test_config=None):
             'size': taille
         }
         return Response(json.dumps(answer), mimetype='application/json')
+
+    @app.route('/getlast', methods=['GET'])
+    def get_data():
+        data = Pictures.query.order_by(Pictures.id.desc()).first()
+        longitude = data.longitude
+        latitude = data.latitude
+        data_send = {'latitude': latitude, 'longitude': longitude}
+        return jsonify(data_send)
 
 
 
