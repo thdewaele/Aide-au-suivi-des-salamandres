@@ -212,11 +212,18 @@ drawpiecefin.addEventListener("click",function (e){
         var taille_salamandre = taille_pixel_sal / pixel_cm;
         var taille_cm = taille_salamandre.toPrecision(5);
         console.log("Taille salamandre en cm: ", taille_salamandre);
+        let inputElement = document.getElementById('capture');
+        var filename = null;
+        if (inputElement.files.length>0){
+            filename = inputElement.files[0].name;
+            console.log(filename);
+        }
         document.getElementById("taille").innerHTML = "Estimation de la taille de la salamandre en cm: " + taille_cm;
         document.getElementById("ajoutdb").innerHTML ="Votre photo a bien été ajouté à la base de données";
         const taille = taille_cm;
         axios.post('http://127.0.0.1:5000/addtaille', {
-            size: taille
+            size: taille,
+            filename: filename
         })
         .then((response) => {
             console.log(response);

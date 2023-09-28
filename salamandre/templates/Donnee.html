@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salamandres observées</title>
+     <style>
+        table {
+            width: 80%;
+            margin: 0 auto;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #dddddd;
+        }
+         th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<header>
+            <a href="{{"/" }}">Accueil</a>
+</header>
+<body>
+<center>
+    <h1> Liste des salamandres obersvées</h1>
+</center>
+    <table id ="salamandres-table">
+        <thread>
+            <tr>
+                <th>ID</th>
+                <th> Filename</th>
+                <th> Latitude</th>
+                <th> Longitude</th>
+                <th> Focal</th>
+                <th> Date</th>
+                <th> Taille de la salamandre</th>
+            </tr>
+        </thread>
+        <tbody>
+            {%  for salamandre in salamandres %}
+                <tr>
+                    <td>{{ salamandre.id }}</td>
+                    <td>{{ salamandre.filename}}</td>
+                    <td>{{ salamandre.latitude }}</td>
+                     <td>{{ salamandre.longitude }}</td>
+                    <td>{{ salamandre.focal }}</td>
+                    <td>{{ salamandre.date }}</td>
+                    <td>{{ salamandre.size }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+ <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src ="../static/BestRendering.js"></script>
+        <script src="../static/scripts_donnee.js"></script>
+</body>
+</html>

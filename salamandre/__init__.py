@@ -12,8 +12,10 @@ from werkzeug.utils import secure_filename
 
 import salamandre
 from salamandre.accueil import accueil
+from salamandre.exif_data import get_exif_data
 from salamandre.img import get_gpsinfo
 from salamandre.index import index
+from datetime import datetime
 
 
 db = SQLAlchemy()
@@ -52,7 +54,10 @@ def create_app(test_config=None):
 
     @app.route('/donnee.html')
     def donnee():
-        return salamandre.donnee()
+        pictures = Pictures.query.all()
+        return render_template('donnee.html', salamandres=pictures)
+
+    bp = Blueprint('donnee', __name__, url_prefix='./donnee.html')
 
 
     @app.route('/addpict', methods=['POST'])
@@ -64,8 +69,12 @@ def create_app(test_config=None):
 
 
         latitude, longitude = get_gpsinfo(temp.name)
+        date_exif = get_exif_data(temp.name)
         file = temp.name
-        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, 0,size)
+        print(date_exif)
+        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size)
+        print(data.date)
+        print(date_exif)
         db.session.add(data)
         db.session.commit()
 
@@ -81,13 +90,13 @@ def create_app(test_config=None):
     @app.route ('/addtaille', methods = ['POST'])
     def add_taille():
         dataset = request.get_json()
-        print(dataset)
         taille = dataset.get('size')
+        filename = dataset.get('filename')
         derniere_ligne = Pictures.query.order_by(Pictures.id.desc()).first()
         derniere_ligne.size = taille
+        derniere_ligne.filename=filename
         db.session.commit()
         size = float(taille)
-        print(taille)
         answer ={
             'size': taille
         }
@@ -101,8 +110,14 @@ def create_app(test_config=None):
         data_send = {'latitude': latitude, 'longitude': longitude}
         return jsonify(data_send)
 
+    """
+    @app.route('/getdata', methods=['GET'])
+    def getalldata():
+        pictures = Pictures.query.all()
+        data = [{'id':salamandre.id, 'filename': salamandre.filename, 'file': salamandre.file, 'latitude': salamandre.latitude, 'longitude': salamandre.longitude, 'focal': salamandre.focal, 'date':salamandre.date, 'size': salamandre.size} for salamandre in pictures]
+        return jsonify(data, default = custom_json_serializer)
 
-
+"""
 
 
     from . import img
@@ -112,7 +127,9 @@ def create_app(test_config=None):
     return app
 
 
-
+def custom_json_serializer(obj):
+    if isinstance(obj, bytes):
+        return obj.decode('utf-8')
 
 
 
@@ -135,7 +152,7 @@ class Pictures (db.Model):
         self.longitude =longitude
         self.latitude = latitude
         self.focal = focal
-        self.data = date
+        self.date = date
         self.geo = 'POINT ({} {})'.format(longitude,latitude)
         self.size = size
 

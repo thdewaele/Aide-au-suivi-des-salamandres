@@ -3,6 +3,11 @@ bouton.addEventListener("click",function(){
     window.location.href = "../../index.html";
 });
 
+var bouton2 = document.getElementById("godonnee");
+bouton2.addEventListener("click",function(){
+    window.location.href = "../../donnee.html";
+});
+
 var lat = 0;
 var long =0;
 
@@ -10,6 +15,7 @@ axios.get('http://127.0.0.1:5000/getlast')
     .then (function (response){
     console.log(response.data);
     var data = response.data;
+    console.log(data);
     console.log(data["latitude"]);
     lat = data['latitude'];
     long = data['longitude'];
