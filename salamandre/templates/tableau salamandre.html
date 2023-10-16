@@ -1,75 +1,21 @@
 <!DOCTYPE html>
-<html lang="fr">
-
-    <head>
-        <meta charset="UFT-8">
-        <title>Photo de salamandre</title>
-        <meta name = "viewport" content="width = device -width">
-        <link rel="stylesheet" href="../static/style.css">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"/>
-        <style>
-            p>img{
-                max-width : 80%;
-            }
-        </style>
-
-    </head>
-
-    <body>
-        <header>
-            <a href="{{"/" }}">Accueil</a>
-            <h1><center>Upload de la photo de salamandre</center></h1>
-            <h2><center> Selectionnez votre photo</center></h2>
-
-        </header>
-
-        <main>
-
-           <center>
-            <from action="#" id = "myform">
-
-                <div>
-                    <p align="center">
-                        <input type="file"id = "capture"accept="image/*"/>
-                    </p>
-                </div>
-                <button type="button" id = "showPosition">Montrer la localisation</button>
-                <br/>
-                <label for="piece">Choisissez la pièce</label>
-                <select name="piece" id="piece">
-                    <option value = "1"> 1€</option>
-                    <option value = "2"> 2€</option>
-                    <option value = "3"> 0.5€</option>
-                    <option value = "4"> 1cm</option>
-                </select>
-                <button  id="btn">Valider le choix</button>
-                <br/>
-
-                <button type="button" id = "drawsal">Identifier la salamandre</button>
-                <button type="button" id ="drawpiece">Identifier la pièce </button>
-                <br/>
-                <button type="button" id="drawfin">Terminer l'identifiaction de la salamandre</button>
-                <button type="button" id="drawpiecefin">Terminer l'identification de la pièce</button>
-                <br/>
-                <p id = "taille"></p>
-                <p id = "ajoutdb"></p>
-                <div id="result"></div>
-            </from>
-            <p>
-
-                <div id = "picture" class="container">
-                    <canvas id = "canvas"></canvas>
-                    <img  id = "img"  src="" style="display:none"/>
-                </div>
-
-
-            </p>
-           </center>
-        </main>
-        <center>
-            <div id ="map"></div>
-        </center>
-        <table id="tableau">
+<html>
+<head>
+    <title>Tableau HTML dynamique avec inputs</title>
+     <style>
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            width: 10px; /* Largeur des cellules */
+            height: 10px; /* Hauteur des cellules */
+            text-align: center; /* Centre le contenu dans la cellule */
+            font-size: 8px; /* Taille de police pour un caractère */
+        }
+    </style>
+</head>
+<body>
+    <table id="tableau">
         <tbody>
             <tr>
                 <td class="espace"></td>
@@ -183,15 +129,9 @@
 
         </tbody>
     </table>
-        <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
-       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src ="../static/BestRendering.js"></script>
-        <script src="../static/scripts.js"></script>
 
 
-
-
-
-    </body>
-
+</body>
+</html>
+</body>
 </html>
