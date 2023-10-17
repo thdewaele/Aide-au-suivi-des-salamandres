@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, Blueprint, Response
 
 from flask import Flask, render_template, request, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import ARRAY
 from geoalchemy2 import Geometry
 from werkzeug.utils import secure_filename
 
@@ -72,7 +73,7 @@ def create_app(test_config=None):
         date_exif = get_exif_data(temp.name)
         file = temp.name
         print(date_exif)
-        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size)
+        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size,None)
         print(data.date)
         print(date_exif)
         db.session.add(data)
@@ -110,6 +111,39 @@ def create_app(test_config=None):
         data_send = {'latitude': latitude, 'longitude': longitude}
         return jsonify(data_send)
 
+    @app.route('/identification', methods=['POST'])
+    def add_identification():
+        dataset = request.get_json()
+        tab = dataset.get('tableau')
+        maxlength = 0
+        length = len(tab)
+        for i in range(length):
+            long = len(tab[i])
+            line = tab[i]
+            if (long > maxlength):
+                maxlength = long
+            for j in range(long):
+                if (line[j]== None):
+                    line[j]=0
+
+        tab2 = [[0]*maxlength for _ in range(length)]
+        for i in range(length):
+            long = len(tab[i])
+            line = tab[i]
+            for j in range(long):
+                if (line[j] != 0):
+                    tab2[i][j] = line[j]
+        print(tab2)
+
+        data = Pictures.query.order_by(Pictures.id.desc()).first()
+        data.identification = tab2
+        db.session.commit()
+        answer ={
+            'reponse' : "ok"
+        }
+        return Response(json.dumps(answer), mimetype='application/json')
+
+
     """
     @app.route('/getdata', methods=['GET'])
     def getalldata():
@@ -145,8 +179,9 @@ class Pictures (db.Model):
     focal = db.Column(db.Integer)
     date = db.Column(db.Date)
     size = db.Column(db.Float)
+    identification = db.Column(ARRAY(db.Integer))
 
-    def __init__(self, filename, file, longitude, latitude, focal,date, size):
+    def __init__(self, filename, file, longitude, latitude, focal,date, size, identification):
         self.filename = filename
         self.file = file
         self.longitude =longitude
@@ -155,6 +190,7 @@ class Pictures (db.Model):
         self.date = date
         self.geo = 'POINT ({} {})'.format(longitude,latitude)
         self.size = size
+        self.identification = identification
 
 
 

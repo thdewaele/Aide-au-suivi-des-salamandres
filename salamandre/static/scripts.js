@@ -232,3 +232,63 @@ drawpiecefin.addEventListener("click",function (e){
     }
 });
 
+const tabcomplet= document.querySelector("#tableaumandel");
+tabcomplet.addEventListener("click",function (e) {
+    var tableau = document.getElementById("tableau");
+
+    var lignes = tableau.getElementsByTagName("tr");
+
+    var tab = [];
+
+    for (var i = 0; i < lignes.length; i++) {
+        var cells = lignes[i].getElementsByTagName("td");
+        var ligne = [];
+
+        for (var j = 0; j < cells.length; j++) {
+            var elem = cells[j];
+            if (elem != null){
+                if (elem.querySelector("input") != null) {
+                    var valeur = parseInt(elem.querySelector("input").value);
+
+                }
+                else{
+                    var valeur = 0;
+                }
+            }else{
+                var valeur = 0;
+            }
+
+
+            ligne.push(valeur);
+        }
+        tab.push(ligne)
+    }
+    for (var i = 0;i<tab.length; i++){
+        var ligne = tab[i];
+        for (var j = 0; j<ligne.length; j++){
+            if (typeof ligne[j] != 'number'){
+                ligne[j]= 0;
+            }
+            else if (ligne [j] == NaN){
+                ligne[j] = 0;
+                console.log("Hello");
+            }
+        }
+    }
+
+
+    axios.post('http://127.0.0.1:5000/identification',{
+        tableau: tab
+    })
+        .then(function (response){
+        console.log(response.data);
+    })
+    .catch(function (error){
+        console.error(error)
+    });
+
+    console.log(tab);
+});
+
+
+
