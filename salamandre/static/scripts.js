@@ -281,7 +281,13 @@ tabcomplet.addEventListener("click",function (e) {
         tableau: tab
     })
         .then(function (response){
-        console.log(response.data);
+            console.log(response.data);
+            var data = response.data;
+            lat = data['latitude'];
+            long = data['longitude'];
+            if (lat != 0 && long!= 0){
+                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire a été observée à cette position: latitude: " + lat +", longitude: " +long ;
+            }
     })
     .catch(function (error){
         console.error(error)

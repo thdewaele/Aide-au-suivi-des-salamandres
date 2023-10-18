@@ -72,10 +72,9 @@ def create_app(test_config=None):
         latitude, longitude = get_gpsinfo(temp.name)
         date_exif = get_exif_data(temp.name)
         file = temp.name
-        print(date_exif)
+
         data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size,None)
-        print(data.date)
-        print(date_exif)
+
         db.session.add(data)
         db.session.commit()
 
@@ -133,14 +132,41 @@ def create_app(test_config=None):
             for j in range(long):
                 if (line[j] != 0):
                     tab2[i][j] = line[j]
-        print(tab2)
+
 
         data = Pictures.query.order_by(Pictures.id.desc()).first()
         data.identification = tab2
         db.session.commit()
-        answer ={
-            'reponse' : "ok"
-        }
+
+        pictures = Pictures.query.all()
+        identique = 1
+        data_send =  {'latitude': 0, 'longitude': 0 }
+        for index, picture in enumerate(pictures):
+            identique = 1
+            if index < len(pictures) - 1:
+                tabcurrent = picture.identification
+                if (tabcurrent != None):
+                    for i in range (len(tabcurrent)):
+                        for j in range (len(tabcurrent[i])):
+                            if (tabcurrent[i][j] != tab2[i][j]):
+                                identique = 0
+                                break
+
+                        if (identique ==0):
+                            break
+                    if (identique == 1):
+                        print("hello")
+                        print (index)
+                        longitude = picture.longitude
+                        latitude = picture.latitude
+                        data_send = {'latitude': latitude, 'longitude': longitude}
+                        break
+
+
+        if (identique==1):
+            answer =  data_send
+        else:
+            answer = data_send
         return Response(json.dumps(answer), mimetype='application/json')
 
 
