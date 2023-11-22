@@ -6,7 +6,7 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 
-# read on 31/01/2023 on https://pypi.org/project/gpsphoto/
+# read on 31/01/2023 on https://pypi.rg/project/gpsphoto/
 def get_gpsinfo(img):
     print("Image: ", img)
     data = gpsphoto.getGPSData(img)

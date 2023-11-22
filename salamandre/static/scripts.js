@@ -240,6 +240,7 @@ tabcomplet.addEventListener("click",function (e) {
 
     var tab = [];
 
+
     for (var i = 0; i < lignes.length; i++) {
         var cells = lignes[i].getElementsByTagName("td");
         var ligne = [];
@@ -263,18 +264,17 @@ tabcomplet.addEventListener("click",function (e) {
         }
         tab.push(ligne)
     }
+
     for (var i = 0;i<tab.length; i++){
         var ligne = tab[i];
         for (var j = 0; j<ligne.length; j++){
-            if (typeof ligne[j] != 'number'){
-                ligne[j]= 0;
-            }
-            else if (ligne [j] == NaN){
-                ligne[j] = 0;
-                console.log("Hello");
+
+            if (ligne[j]!= 1 && ligne[j]!=2){
+                ligne[j]=0;
             }
         }
     }
+
 
 
     axios.post('http://127.0.0.1:5000/identification',{
@@ -285,8 +285,9 @@ tabcomplet.addEventListener("click",function (e) {
             var data = response.data;
             lat = data['latitude'];
             long = data['longitude'];
+            date = data['date'];
             if (lat != 0 && long!= 0){
-                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire a été observée à cette position: latitude: " + lat +", longitude: " +long ;
+                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire a été observée le " +date +"à cette position: latitude: " + lat +", longitude: " +long ;
             }
     })
     .catch(function (error){

@@ -32,7 +32,11 @@ def get_coordPiece(filename, piece):
         top_left = max_loc
     bottom_right = (top_left[0] + w, top_left[1] +h)
 
+    centre = ( int(top_left[0]+w/2), int (top_left[1]+h/2))
+    print(centre)
+
     cv2.rectangle(img, top_left, bottom_right, (255,255,0), 5)
+    cv2.circle(img, centre, 180, (255,255,0), 5)
 
     cv2.namedWindow("Detect", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Detect", 500, 900)
@@ -41,7 +45,8 @@ def get_coordPiece(filename, piece):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    get_coordPiece("IMG_0962.jpg",1)
+    get_coordPiece("20230319_195622008_iOS.jpg",2)
+    get_coordPiece("IMG_0962.jpg", 1)
 
 
 """
