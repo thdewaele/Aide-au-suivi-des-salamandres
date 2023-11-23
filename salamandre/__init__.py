@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import tempfile
 
 import psycopg2
@@ -107,15 +108,19 @@ def create_app(test_config=None):
         data = Pictures.query.order_by(Pictures.id.desc()).first()
         longitude = data.longitude
         latitude = data.latitude
+
         data_send = {'latitude': latitude, 'longitude': longitude}
         return jsonify(data_send)
 
     @app.route('/identification', methods=['POST'])
     def add_identification():
+
         dataset = request.get_json()
+
         tab = dataset.get('tableau')
         maxlength = 0
         length = len(tab)
+        print(tab)
         for i in range(length):
             long = len(tab[i])
             line = tab[i]
@@ -124,28 +129,70 @@ def create_app(test_config=None):
             for j in range(long):
                 if (line[j]== None):
                     line[j]=0
-
         tab2 = [[0]*maxlength for _ in range(length)]
         for i in range(length):
             long = len(tab[i])
             line = tab[i]
             for j in range(long):
-                if (line[j] != 0):
-                    tab2[i][j] = line[j]
+                if (line[j] == "x" or line[j]=="X"):
+                    tab2[i][j]= 1000
+                elif (line[j] != 0):
+                    if (line[j] == ""):
+                        tab[i][j] = 0
+                    else:
+                        tab2[i][j] = line[j]
+
+        print(tab2)
+        ligne_dos = []
+        sum_left =0;
+        sum_mid= 0;
+        sum_rigth= 0;
+        for i in range(5):
+            sum_left+=tab[6+i][3]
+            sum_mid+=tab[6+i][4]
+            sum_rigth+=tab[6+i][5]
+
+        ligne_dos.append(sum_left)
+        ligne_dos.append(sum_mid)
+        ligne_dos.append(sum_rigth)
+
+        tab3 = [[0]*maxlength for _ in range(9)]
+        for i in range(length):
+            if (i+5>=length):
+                break
+            long = len(tab[i])
+            line = tab2[i]
+            if (i<6):
+                for j in range(long):
+                    if (line[j] != 0):
+                        tab3[i][j] = line[j]
+            elif (i==6):
+                tab3[i][3]=ligne_dos[0]
+                tab3[i][4] = ligne_dos[1]
+                tab3[i][5] = ligne_dos[2]
+            else:
+                line = tab2[i+4]
+                for j in range(long):
+                    if (line[j] != 0):
+                        tab3[i][j] = line[j]
+
 
 
         data = Pictures.query.order_by(Pictures.id.desc()).first()
-        data.identification = tab2
+        data.identification = tab3
         db.session.commit()
 
         pictures = Pictures.query.all()
         identique = 1
-        data_send =  {'latitude': 0, 'longitude': 0 }
+        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0}
         for index, picture in enumerate(pictures):
             identique = 1
             if index < len(pictures) - 1:
                 tabcurrent = picture.identification
+
                 if (tabcurrent != None):
+                    if (len(tab2) != len(tabcurrent) and tabcurrent != None):
+                        continue
                     for i in range (len(tabcurrent)):
                         for j in range (len(tabcurrent[i])):
                             if (tabcurrent[i][j] != tab2[i][j]):
@@ -155,19 +202,16 @@ def create_app(test_config=None):
                         if (identique ==0):
                             break
                     if (identique == 1):
-                        print("hello")
-                        print (index)
                         longitude = picture.longitude
                         latitude = picture.latitude
-                        data_send = {'latitude': latitude, 'longitude': longitude}
+                        date = picture.date
+                        if (date != None):
+                            date= date.isoformat()
+                        data_send = {'latitude': latitude, 'longitude': longitude, 'date': date}
                         break
 
 
-        if (identique==1):
-            answer =  data_send
-        else:
-            answer = data_send
-        return Response(json.dumps(answer), mimetype='application/json')
+        return Response(json.dumps(data_send), mimetype='application/json')
 
 
     """
@@ -221,66 +265,4 @@ class Pictures (db.Model):
 
 
 
-
-
-"""
-
-def picturesadd(filename,file, longitude, latitude,focal,date):
-
-    geo = 'POINT({} {})'.format(longitude, latitude)
-    data = Pictures(filename=filename,
-                    file=file,
-                    longitude=longitude,
-                    latitude=latitude,
-                    geo=geo,
-                    focal=focal,
-                    date=date)
-
-    db.session.add(data)
-    db.session.commit()
-    return render_template("index.html")
-
-class Pictures (db.Model):
-    __tablename__ = 'Pictures'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    filename = db.Column(db.String(50))
-    file = db.Column(db.LargeBinary)
-    longitude = db.Column(db.Float)
-    latitude = db.Column(db.Float)
-    geo = db.Column(Geometry(geometry_type="POINT"))
-    focal = db.Column(db.Integer)
-    date = db.Column(db.Date)
-
-    @classmethod
-    def add_pictures(cls, filename, file, longitude, latitude, focal, date):
-
-
-        geo = 'POINT({} {})'.format(longitude, latitude)
-        data = Pictures(filename=filename,
-                        file = file,
-                           longitude=longitude,
-                           latitude=latitude,
-                          geo=geo,
-                        focal = focal,
-                        date = date)
-
-        db.session.add(data)
-        db.session.commit()
-
-    @classmethod
-    def update_geometries(cls):
-
-"""
-"""
-Using each city's longitude and latitude, add geometry data to db."""
-"""
-        pict = Pictures.query.all()
-
-        for p in pict:
-            point = 'POINT({} {})'.format(p.longitude, p.latitude)
-            p.geo = point
-
-        db.session.commit()
-        
-"""
+application = create_app()
