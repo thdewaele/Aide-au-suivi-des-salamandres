@@ -1,3 +1,4 @@
+
 // Based on : https://medium.com/front-end-weekly/draw-an-image-in-canvas-using-javascript-%EF%B8%8F-2f75b7232c63 consulté le 20/02/23
 
 var imagedisplay = 0;
@@ -45,16 +46,13 @@ document.addEventListener('DOMContentLoaded',(ev)=> {
     })
 })
 
-var lat = 0;
-var long = 0;
+
 
 
 
 BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'photo', function (response) {
     var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
     console.log(anwser);
-    lat = anwser['lat'];
-    long = anwser['long'];
 });
 
 
@@ -65,7 +63,8 @@ BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'p
     class Geolocation {
 
 
-        showPosition() {
+        showPosition(lat, long) {
+            console.log(lat, long)
             if (lat !==0 && long !==0){
                 let mapContainer = document.querySelector("#map")
             mapContainer.style.display = "block"
@@ -90,7 +89,20 @@ BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'p
 const showPosition = document.querySelector("#showPosition")
 showPosition.addEventListener("click", function (e) {
     e.preventDefault()
-    new Geolocation().showPosition()
+    axios.get('http://127.0.0.1:5000/getlast')
+    .then (function (response){
+    console.log(response.data);
+    var data = response.data;
+    console.log(data);
+    console.log(data["latitude"]);
+    var lat = data['latitude'];
+    var long = data['longitude'];
+    new Geolocation().showPosition(lat,long)
+    })
+    .catch(function(error){
+        console.log(error);
+    });
+
 })
 
 var a = 0;
@@ -155,6 +167,7 @@ drawfin.addEventListener("click",function (e){
     test = 2;
     taille_pixel_sal = dist;
     console.log('taille en pixel sal', taille_pixel_sal);
+    document.getElementById("taille").innerHTML = "Identification de la salamandre terminée";
 })
 
 const drawpiece = document.querySelector("#drawpiece")
@@ -234,6 +247,7 @@ drawpiecefin.addEventListener("click",function (e){
 
 const tabcomplet= document.querySelector("#tableaumandel");
 tabcomplet.addEventListener("click",function (e) {
+     document.getElementById("fin_encodage").innerHTML = "Encodage ajouté à la db";
     var tableau = document.getElementById("tableau");
 
     var lignes = tableau.getElementsByTagName("tr");
@@ -249,7 +263,7 @@ tabcomplet.addEventListener("click",function (e) {
             var elem = cells[j];
             if (elem != null){
                 if (elem.querySelector("input") != null) {
-                    var valeur = parseInt(elem.querySelector("input").value);
+                    var valeur = elem.querySelector("input").value;
 
                 }
                 else{
@@ -265,15 +279,7 @@ tabcomplet.addEventListener("click",function (e) {
         tab.push(ligne)
     }
 
-    for (var i = 0;i<tab.length; i++){
-        var ligne = tab[i];
-        for (var j = 0; j<ligne.length; j++){
 
-            if (ligne[j]!= 1 && ligne[j]!=2){
-                ligne[j]=0;
-            }
-        }
-    }
 
 
 
@@ -296,6 +302,5 @@ tabcomplet.addEventListener("click",function (e) {
 
     console.log(tab);
 });
-
 
 
