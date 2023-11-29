@@ -74,7 +74,7 @@ def create_app(test_config=None):
         date_exif = get_exif_data(temp.name)
         file = temp.name
 
-        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size,None)
+        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size,None, None)
 
         db.session.add(data)
         db.session.commit()
@@ -120,7 +120,7 @@ def create_app(test_config=None):
         tab = dataset.get('tableau')
         maxlength = 0
         length = len(tab)
-        print(tab)
+
         for i in range(length):
             long = len(tab[i])
             line = tab[i]
@@ -142,15 +142,15 @@ def create_app(test_config=None):
                     else:
                         tab2[i][j] = line[j]
 
-        print(tab2)
+
         ligne_dos = []
         sum_left =0;
         sum_mid= 0;
         sum_rigth= 0;
         for i in range(5):
-            sum_left+=tab[6+i][3]
-            sum_mid+=tab[6+i][4]
-            sum_rigth+=tab[6+i][5]
+            sum_left+=int(tab2[6+i][3])
+            sum_mid+=int(tab2[6+i][4])
+            sum_rigth+=int(tab2[6+i][5])
 
         ligne_dos.append(sum_left)
         ligne_dos.append(sum_mid)
@@ -184,9 +184,12 @@ def create_app(test_config=None):
 
         pictures = Pictures.query.all()
         identique = 1
-        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0}
+        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0, 'pourcentage':0}
+        min_compt = 10000000
+        index_min_compt = 1000
         for index, picture in enumerate(pictures):
             identique = 1
+            compt = 0
             if index < len(pictures) - 1:
                 tabcurrent = picture.identification
 
@@ -196,19 +199,104 @@ def create_app(test_config=None):
                     for i in range (len(tabcurrent)):
                         for j in range (len(tabcurrent[i])):
                             if (tabcurrent[i][j] != tab2[i][j]):
+                                compt += 1
                                 identique = 0
-                                break
 
-                        if (identique ==0):
-                            break
                     if (identique == 1):
+                        break;
+                        #if (identique ==0):
+                         #   break
+                    if (compt < min_compt):
+                        min_compt = compt
+                        index_min_compt = index
+
+                    #Modif pour récuperer l'identification de avec la plus grande similitude.
+
+
+
+        salamandre_ajoutee = Pictures.query.order_by(Pictures.id.desc()).first()
+
+
+
+        data_sal = Salamandre.query.order_by(Salamandre.id.desc()).first()
+
+        if (data_sal is not None):
+            last_id = data_sal.salamandre_id
+
+            nombre_tab = len(tab2)*len(tab2)
+            pourcentage = round((1-(min_compt/nombre_tab))*100,2)
+
+            if (pourcentage > 95):
+                for  index, picture in enumerate(pictures):
+                    if (index == index_min_compt):
+
                         longitude = picture.longitude
                         latitude = picture.latitude
                         date = picture.date
+                        id = picture.salamandre_id
+
                         if (date != None):
-                            date= date.isoformat()
-                        data_send = {'latitude': latitude, 'longitude': longitude, 'date': date}
+                            date = date.isoformat()
+                        if (id == None):
+
+                            picture.salamandre_id = last_id + 1
+                            salamandre_ajoutee.salamandre_id = last_id + 1
+                            db.session.commit()
+                            date1 = salamandre_ajoutee.date
+                            lat1 = salamandre_ajoutee.latitude
+                            long1 = salamandre_ajoutee.longitude
+                            data = Salamandre(picture.salamandre_id,date1,lat1, long1, 2)
+
+                            db.session.add(data)
+                            db.session.commit()
+                            element = Salamandre.query.order_by(Salamandre.id.desc()).first()
+                            element.last_lat = salamandre_ajoutee.latitude
+                            element.last_long = salamandre_ajoutee.longitude
+                            element.last_obs = salamandre_ajoutee.date
+                            db.session.commit()
+                        else:
+
+                            salamandre_ajoutee.salamandre_id = id
+                            element = db.session.query(Salamandre).filter(Salamandre.salamandre_id== id).first()
+                            element.last_lat = salamandre_ajoutee.latitude
+                            element.last_long = salamandre_ajoutee.longitude
+                            element.last_obs = salamandre_ajoutee.date
+                            element.nbre_obs +=1
+                            db.session.commit()
+                        data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage}
+
                         break
+            else:
+                salamandre_ajoutee.salamandre_id= last_id+1
+                date1 = salamandre_ajoutee.date
+
+                lat1 = salamandre_ajoutee.latitude
+                long1 = salamandre_ajoutee.longitude
+                data = Salamandre(last_id+1, date1,lat1, long1, 1)
+                db.session.add(data)
+                db.session.commit()
+                element =Salamandre.query.order_by(Salamandre.id.desc()).first()
+                element.last_lat = salamandre_ajoutee.latitude
+                element.last_long = salamandre_ajoutee.longitude
+                element.last_obs = salamandre_ajoutee.date
+                db.session.commit()
+        else:
+
+            salamandre_ajoutee.salamandre_id = 1
+
+            date1 = salamandre_ajoutee.date
+            lat1 = salamandre_ajoutee.latitude
+            long1 = salamandre_ajoutee.longitude
+            data = Salamandre(1, date1, lat1, long1, 1)
+
+            db.session.add(data)
+            db.session.commit()
+            element = Salamandre.query.order_by(Salamandre.id.desc()).first()
+            element.last_lat = salamandre_ajoutee.latitude
+            element.last_long = salamandre_ajoutee.longitude
+            element.last_obs = salamandre_ajoutee.date
+            db.session.commit()
+
 
 
         return Response(json.dumps(data_send), mimetype='application/json')
@@ -236,6 +324,21 @@ def custom_json_serializer(obj):
         return obj.decode('utf-8')
 
 
+class Salamandre(db.Model):
+    __tablename__ = "salamandre"
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    salamandre_id = db.Column(db.Integer) #, db.ForeignKey('Pictures.salamandre_id')
+    last_obs = db.Column(db.Date)
+    last_lat = db.Column(db.Float)
+    last_long = db.Column(db.Float)
+    nbre_obs = db.Column(db.Integer)
+
+    def __init__(self, id, date, lat, long, nbr_obs):
+        self.salamandre_id = id
+        self.date = date
+        self.lat = lat
+        self.long = long
+        self.nbre_obs = nbr_obs
 
 class Pictures (db.Model):
     __tablename__ = 'pictures'
@@ -250,8 +353,9 @@ class Pictures (db.Model):
     date = db.Column(db.Date)
     size = db.Column(db.Float)
     identification = db.Column(ARRAY(db.Integer))
+    salamandre_id = db.Column(db.Integer) #a verifier + creer colonne db
 
-    def __init__(self, filename, file, longitude, latitude, focal,date, size, identification):
+    def __init__(self, filename, file, longitude, latitude, focal,date, size, identification, salamandre_id):
         self.filename = filename
         self.file = file
         self.longitude =longitude
@@ -261,6 +365,7 @@ class Pictures (db.Model):
         self.geo = 'POINT ({} {})'.format(longitude,latitude)
         self.size = size
         self.identification = identification
+        self.salamandre_id =salamandre_id
 
 
 

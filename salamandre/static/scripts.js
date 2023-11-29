@@ -292,8 +292,9 @@ tabcomplet.addEventListener("click",function (e) {
             lat = data['latitude'];
             long = data['longitude'];
             date = data['date'];
+            pourcentage = data['pourcentage']
             if (lat != 0 && long!= 0){
-                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire a été observée le " +date +"à cette position: latitude: " + lat +", longitude: " +long ;
+                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à "+pourcentage+"% a été observée le " +date +"à cette position: latitude: " + lat +", longitude: " +long ;
             }
     })
     .catch(function (error){
