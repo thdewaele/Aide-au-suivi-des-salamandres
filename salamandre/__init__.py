@@ -1,3 +1,4 @@
+
 import json
 import os
 import sys
@@ -6,12 +7,13 @@ import tempfile
 import psycopg2
 from flask import Flask, jsonify, request, Blueprint, Response
 
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash,send_file
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import ARRAY
 from geoalchemy2 import Geometry
 from werkzeug.utils import secure_filename
-
+from PIL import Image
+from io import BytesIO
 import salamandre
 from salamandre.accueil import accueil
 from salamandre.exif_data import get_exif_data
@@ -68,13 +70,15 @@ def create_app(test_config=None):
         filename = secure_filename(dataset.name)
         with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp:
             dataset.save(temp.name)
-
-
-        latitude, longitude = get_gpsinfo(temp.name)
-        date_exif = get_exif_data(temp.name)
+            file_content = temp.read()
         file = temp.name
 
-        data = Pictures(dataset.name, file.encode('ascii'), longitude, latitude, 0, date_exif,size,None, None)
+        latitude, longitude = get_gpsinfo(file)
+        date_exif = get_exif_data(file)
+
+
+
+        data = Pictures(dataset.name, file_content, longitude, latitude, 0, date_exif,size,None, None)
 
         db.session.add(data)
         db.session.commit()
@@ -118,6 +122,8 @@ def create_app(test_config=None):
         dataset = request.get_json()
 
         tab = dataset.get('tableau')
+        pourc = dataset.get('pourc')
+        print("Pourcentage : ", pourc)
         maxlength = 0
         length = len(tab)
 
@@ -184,29 +190,36 @@ def create_app(test_config=None):
 
         pictures = Pictures.query.all()
         identique = 1
-        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0, 'pourcentage':0}
+        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0, 'pourcentage':0, 'index': 0}
         min_compt = 10000000
         index_min_compt = 1000
         for index, picture in enumerate(pictures):
+            print(index)
             identique = 1
             compt = 0
             if index < len(pictures) - 1:
                 tabcurrent = picture.identification
 
                 if (tabcurrent != None):
-                    if (len(tab2) != len(tabcurrent) and tabcurrent != None):
+                    if (len(tab3) != len(tabcurrent) and tabcurrent != None):
+                        print("je suis là")
+                        print("tab2: ",len(tab2))
+                        print("tab: ",len(tabcurrent))
                         continue
                     for i in range (len(tabcurrent)):
                         for j in range (len(tabcurrent[i])):
-                            if (tabcurrent[i][j] != tab2[i][j]):
+                            if (tabcurrent[i][j] != tab3[i][j]):
                                 compt += 1
                                 identique = 0
+                    print(compt)
 
                     if (identique == 1):
+                        print("Identique")
                         break;
                         #if (identique ==0):
                          #   break
                     if (compt < min_compt):
+                        print("hello")
                         min_compt = compt
                         index_min_compt = index
 
@@ -222,11 +235,12 @@ def create_app(test_config=None):
 
         if (data_sal is not None):
             last_id = data_sal.salamandre_id
-
+            print(min_compt)
             nombre_tab = len(tab2)*len(tab2)
+            #print(1-(min_compt/nombre_tab))*100
             pourcentage = round((1-(min_compt/nombre_tab))*100,2)
-
-            if (pourcentage > 95):
+            print(pourcentage)
+            if (pourcentage >= pourc):
                 for  index, picture in enumerate(pictures):
                     if (index == index_min_compt):
 
@@ -263,7 +277,9 @@ def create_app(test_config=None):
                             element.last_obs = salamandre_ajoutee.date
                             element.nbre_obs +=1
                             db.session.commit()
-                        data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage}
+
+                        print("Indice envoyé: ", index)
+                        data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage, 'index' : index}
 
                         break
             else:
@@ -280,6 +296,7 @@ def create_app(test_config=None):
                 element.last_long = salamandre_ajoutee.longitude
                 element.last_obs = salamandre_ajoutee.date
                 db.session.commit()
+                print("sal ajouté +1")
         else:
 
             salamandre_ajoutee.salamandre_id = 1
@@ -300,6 +317,31 @@ def create_app(test_config=None):
 
 
         return Response(json.dumps(data_send), mimetype='application/json')
+
+    @app.route('/get_image', methods=['GET'])
+    def get_image():
+        dataset = request.args.get("index")
+        #indice = dataset.get('index')
+        indice = int(dataset)
+        print("Indice reçu: ", indice)
+        if (indice>0):
+            pictures = Pictures.query.all()
+            for index, picture in enumerate(pictures):
+                if (index == indice):
+                    print(type(picture.file))
+                    file1 = picture.file.decode("ascii")
+                    print("file: ",file1)
+                    with open(picture.file, 'rb') as file:
+                        image_data = file.read()
+                    with open("photo.jpg", "wb") as file:
+                        file.write(image_data)
+
+                    #image = Image.open(BytesIO(image_data))
+
+            return send_file(file, mimetype='image/jpeg')
+        return
+
+
 
 
     """

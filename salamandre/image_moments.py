@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 
 def image_moment(img,ero):
+
    image = cv2.imread(img)
    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
    kernel = np.ones((5, 5), np.uint8)
@@ -52,7 +53,7 @@ def image_moment(img,ero):
          x, y = case
          case_contour = False
          for contour in contours:
-            if cv2.pointPolygonTest(contour, (x, y), False) >= distance_seuil:
+            if cv2.pointPolygonTest(contour, (x+5, y+5), False) >= distance_seuil:
                case_contour = True
                break
          if case_contour:
@@ -121,20 +122,15 @@ def printable(tab):
 
 
 if __name__ == '__main__':
-    tab1,tabcoor = image_moment('1005.jpg',0)
-    tab2, tabcoor2 = image_moment('1005.jpg', 1)
+    tab1,tabcoor = image_moment('../content/prediction_img/segmented_img8.png',0)
+    tab2, tabcoor2 = image_moment('../content/prediction_img/segmented_img8.png', 1)
+
     tab3 = fusiontab(tab1,tab2)
-    print("Tableau sans erosion")
-    printable(tab1)
-    print("Tableau avec erosion")
-    printable(tab2)
-    print("Tableau fusion t1 et t2")
-    printable(tab3)
     result_comp, list =  comptagediff(tab1,tab2)
     print("Tableau avec erosion et fusion identique : ",comparasiontab(tab2, tab3) )
     print("Nombre de difference entre t1 et t2 = ", result_comp)
     print(list)
-    image = cv2.imread("1005.jpg")
+    image = cv2.imread("../content/prediction_img/segmented_img7.png")
     liste_coord = []
     for i in list:
        liste_coord.append(tabcoor[i[0]][i[1]])

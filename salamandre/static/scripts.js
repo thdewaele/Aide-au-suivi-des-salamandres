@@ -249,7 +249,14 @@ const tabcomplet= document.querySelector("#tableaumandel");
 tabcomplet.addEventListener("click",function (e) {
      document.getElementById("fin_encodage").innerHTML = "Encodage ajouté à la db";
     var tableau = document.getElementById("tableau");
-
+    var pourc = document.getElementById("pourcinput").value;
+    console.log(pourc);
+    if (pourc != NaN){
+        console.log(pourc);
+        pourc = parseInt(pourc);
+    }else{
+        pourc = 95;
+    }
     var lignes = tableau.getElementsByTagName("tr");
 
     var tab = [];
@@ -282,26 +289,57 @@ tabcomplet.addEventListener("click",function (e) {
 
 
 
-
+    var indice = -1;
     axios.post('http://127.0.0.1:5000/identification',{
-        tableau: tab
+        tableau: tab, pourc : pourc
     })
-        .then(function (response){
+        .then(function (response) {
             console.log(response.data);
             var data = response.data;
             lat = data['latitude'];
             long = data['longitude'];
             date = data['date'];
-            pourcentage = data['pourcentage']
-            if (lat != 0 && long!= 0){
-                  document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à "+pourcentage+"% a été observée le " +date +"à cette position: latitude: " + lat +", longitude: " +long ;
+            indice = data['index'];
+            pourcentage = data['pourcentage'];
+            if (lat != 0 && long != 0) {
+                document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à " + pourcentage + "% a été observée le " + date + "à cette position: latitude: " + lat + ", longitude: " + long;
             }
+            console.log(indice);
+            if (indice > 0){
+                 return axios.get('http://127.0.0.1:5000/get_image',{
+                   params:{ index: indice}
+                })
+                    .then(response => {
+                        const buffer= response.data;
+                        if (buffer != null){
+                            console.log(buffer)
+                            const binary = new Uint8Array(buffer);
+                            console.log(binary)
+                            const imageData = buffer.reduce((data, byte)=>data+String.fromCharCode(byte),'');
+                            console.log(imageData);
+                            const base64Image= btoa(imageData)
+                            const imgElement = document.createElement('img')
+                            //const imageData = Buffer.from(response.data, 'binary').toString('base64');
+                            //const imgElement = document.createElement('img');
+                            imgElement.src = `data:image/jpeg;ascii,${base64Image}`;
+                            document.getElementById('image-container').appendChild(imgElement);
+                            console.log (response.data);
+                        }
+                    }).catch(error=>{
+                        console.error('Erreur lors de la récupération de l\' image: ', error);
+                })
+            }
+
     })
     .catch(function (error){
         console.error(error)
     });
 
+
+
     console.log(tab);
+
+
 });
 
 
