@@ -125,6 +125,11 @@ def fitted_line(msk_sample,plot=True,scatter=False,ax_rotation=False):
   contours, hierarchy = cv2.findContours(msk_sample, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   rows, cols = msk_sample.shape
 
+  largest_contour = contours[0]
+  for contour in contours:
+      if cv2.coutourArea(contour)> cv2.contourArea(largest_contour):
+          largest_contour = contour
+
   # Calculate endpoints of the line
   vx, vy, x, y = cv2.fitLine(contours[0], cv2.DIST_L2, 0, 0.01, 0.01)
 

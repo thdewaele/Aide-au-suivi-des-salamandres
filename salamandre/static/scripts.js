@@ -251,9 +251,12 @@ tabcomplet.addEventListener("click",function (e) {
     var tableau = document.getElementById("tableau");
     var pourc = document.getElementById("pourcinput").value;
     console.log(pourc);
+
     if (pourc != NaN){
+
         console.log(pourc);
         pourc = parseInt(pourc);
+
     }else{
         pourc = 95;
     }
@@ -305,29 +308,39 @@ tabcomplet.addEventListener("click",function (e) {
                 document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à " + pourcentage + "% a été observée le " + date + "à cette position: latitude: " + lat + ", longitude: " + long;
             }
             console.log(indice);
-            if (indice > 0){
-                 return axios.get('http://127.0.0.1:5000/get_image',{
-                   params:{ index: indice}
+
+            if (indice >= 0) {
+                return axios.get('http://127.0.0.1:5000/get_image', {
+                    params: {index: indice}
                 })
-                    .then(response => {
-                        const buffer= response.data;
-                        if (buffer != null){
-                            console.log(buffer)
-                            const binary = new Uint8Array(buffer);
-                            console.log(binary)
-                            const imageData = buffer.reduce((data, byte)=>data+String.fromCharCode(byte),'');
-                            console.log(imageData);
-                            const base64Image= btoa(imageData)
-                            const imgElement = document.createElement('img')
-                            //const imageData = Buffer.from(response.data, 'binary').toString('base64');
-                            //const imgElement = document.createElement('img');
-                            imgElement.src = `data:image/jpeg;ascii,${base64Image}`;
-                            document.getElementById('image-container').appendChild(imgElement);
-                            console.log (response.data);
+                    .then(function (response) {
+                        const blob = new Blob([response.data], {
+                            type: response.headers["content-type"]
+                        });
+                        var image = new Image();
+                        image.onload = function () {
+                            var canvas = document.getElementById("target");
+                            canvas.width = image.width;
+                            canvas.height = image.height;
+
+                            var target = canvas.getContext("2d");
+                            target.drawImage(image, 0, 0);
                         }
-                    }).catch(error=>{
+                        image.src = URL.createObjectURL(blob);
+                    })
+                    .catch(error=>{
                         console.error('Erreur lors de la récupération de l\' image: ', error);
-                })
+                     });
+                     /*
+                     .then(response => {
+                         console.log(response.data);
+                         const blob = new Blob([response.data], { type: 'image/jpeg' });
+                         const imageURL = URL.createObjectURL(blob);
+                         imageAffichee.src = imageURL;
+                     })
+
+                      */
+
             }
 
     })

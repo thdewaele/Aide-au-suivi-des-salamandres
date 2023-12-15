@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import tempfile
+import io
 
 import psycopg2
 from flask import Flask, jsonify, request, Blueprint, Response
@@ -70,6 +71,7 @@ def create_app(test_config=None):
         filename = secure_filename(dataset.name)
         with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp:
             dataset.save(temp.name)
+            temp.seek(0)
             file_content = temp.read()
         file = temp.name
 
@@ -193,8 +195,9 @@ def create_app(test_config=None):
         data_send =  {'latitude': 0, 'longitude': 0 , 'date':0, 'pourcentage':0, 'index': 0}
         min_compt = 10000000
         index_min_compt = 1000
-        for index, picture in enumerate(pictures):
-            print(index)
+        index = -1
+        for picture in pictures:
+            index += 0
             identique = 1
             compt = 0
             if index < len(pictures) - 1:
@@ -202,30 +205,28 @@ def create_app(test_config=None):
 
                 if (tabcurrent != None):
                     if (len(tab3) != len(tabcurrent) and tabcurrent != None):
-                        print("je suis là")
-                        print("tab2: ",len(tab2))
-                        print("tab: ",len(tabcurrent))
+
                         continue
                     for i in range (len(tabcurrent)):
                         for j in range (len(tabcurrent[i])):
                             if (tabcurrent[i][j] != tab3[i][j]):
                                 compt += 1
                                 identique = 0
-                    print(compt)
+
 
                     if (identique == 1):
-                        print("Identique")
+
                         break;
                         #if (identique ==0):
                          #   break
                     if (compt < min_compt):
-                        print("hello")
+
                         min_compt = compt
                         index_min_compt = index
 
                     #Modif pour récuperer l'identification de avec la plus grande similitude.
 
-
+        print('index_min_compt = ', index_min_compt)
 
         salamandre_ajoutee = Pictures.query.order_by(Pictures.id.desc()).first()
 
@@ -236,12 +237,14 @@ def create_app(test_config=None):
         if (data_sal is not None):
             last_id = data_sal.salamandre_id
             print(min_compt)
-            nombre_tab = len(tab2)*len(tab2)
+            nombre_tab = len(tab2)*len(tab2) - 111
             #print(1-(min_compt/nombre_tab))*100
             pourcentage = round((1-(min_compt/nombre_tab))*100,2)
             print(pourcentage)
             if (pourcentage >= pourc):
-                for  index, picture in enumerate(pictures):
+                index = 0
+                for   picture in pictures:
+                    index += 1
                     if (index == index_min_compt):
 
                         longitude = picture.longitude
@@ -282,6 +285,8 @@ def create_app(test_config=None):
                         data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage, 'index' : index}
 
                         break
+
+
             else:
                 salamandre_ajoutee.salamandre_id= last_id+1
                 date1 = salamandre_ajoutee.date
@@ -324,22 +329,21 @@ def create_app(test_config=None):
         #indice = dataset.get('index')
         indice = int(dataset)
         print("Indice reçu: ", indice)
-        if (indice>0):
-            pictures = Pictures.query.all()
-            for index, picture in enumerate(pictures):
-                if (index == indice):
-                    print(type(picture.file))
-                    file1 = picture.file.decode("ascii")
-                    print("file: ",file1)
-                    with open(picture.file, 'rb') as file:
-                        image_data = file.read()
-                    with open("photo.jpg", "wb") as file:
-                        file.write(image_data)
 
-                    #image = Image.open(BytesIO(image_data))
+        pictures = Pictures.query.all()
+        for index, picture in enumerate(pictures):
+            if (index == indice):
+                print(type(picture.file))
+                file = picture.file
+                #print(file)
+                with open(file,'rb') as f:
+                    return Response(f.read(), mimetype= 'image/jpeg')
 
-            return send_file(file, mimetype='image/jpeg')
-        return
+
+        #return send_file(io.BytesIO(file), mimetype='image/jpeg')
+
+
+    # image = Image.open(BytesIO(image_data))
 
 
 
