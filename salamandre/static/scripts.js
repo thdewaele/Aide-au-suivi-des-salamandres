@@ -304,25 +304,33 @@ tabcomplet.addEventListener("click",function (e) {
             date = data['date'];
             indice = data['index'];
             pourcentage = data['pourcentage'];
-            if (lat != 0 && long != 0) {
+            if (lat >0 && long > 0) {
                 document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à " + pourcentage + "% a été observée le " + date + "à cette position: latitude: " + lat + ", longitude: " + long;
+            } else if (lat==0 && long==0){
+                document.getElementById('salsimilaire').innerHTML='Une salamandre similaire à ' + pourcentage + '% a été obervée le ' + date + " mais les données de positions ne sont pas disponibles";
             }
             console.log(indice);
-
-            if (indice >= 0) {
-                return axios.get('http://127.0.0.1:5000/get_image', {
+        })
+        .catch(function (error){
+            console.error(error)
+        });
+    document.getElementById("download").addEventListener("click",function (){
+        return axios.get('http://127.0.0.1:5000/get_image', {
                     params: {index: indice}
                 })
                     .then(function (response) {
+                        console.log("Hello");
                         const blob = new Blob([response.data], {
                             type: response.headers["content-type"]
                         });
+                        //console.log(response.data);
                         var image = new Image();
+                        console.log(image);
                         image.onload = function () {
                             var canvas = document.getElementById("target");
                             canvas.width = image.width;
                             canvas.height = image.height;
-
+                            console.log('On image.onload');
                             var target = canvas.getContext("2d");
                             target.drawImage(image, 0, 0);
                         }
@@ -331,6 +339,9 @@ tabcomplet.addEventListener("click",function (e) {
                     .catch(error=>{
                         console.error('Erreur lors de la récupération de l\' image: ', error);
                      });
+    });
+            //if (indice >= 0) {
+
                      /*
                      .then(response => {
                          console.log(response.data);
@@ -341,12 +352,10 @@ tabcomplet.addEventListener("click",function (e) {
 
                       */
 
-            }
+            //}
 
-    })
-    .catch(function (error){
-        console.error(error)
-    });
+
+
 
 
 

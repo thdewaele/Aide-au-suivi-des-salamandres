@@ -69,18 +69,23 @@ def create_app(test_config=None):
     def add_pictures():
         dataset = request.files['photo']
         filename = secure_filename(dataset.name)
+
+        #with open (dataset, 'rb') as f:
+        file = dataset.read()
+        dataset.seek(0)
+
         with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp:
             dataset.save(temp.name)
             temp.seek(0)
             file_content = temp.read()
-        file = temp.name
+        file2 = temp.name
 
-        latitude, longitude = get_gpsinfo(file)
-        date_exif = get_exif_data(file)
+        latitude, longitude = get_gpsinfo(file2)
+        date_exif = get_exif_data(file2)
 
 
 
-        data = Pictures(dataset.name, file_content, longitude, latitude, 0, date_exif,size,None, None)
+        data = Pictures(dataset.name, file, longitude, latitude, 0, date_exif,size,None, None)
 
         db.session.add(data)
         db.session.commit()
@@ -192,12 +197,12 @@ def create_app(test_config=None):
 
         pictures = Pictures.query.all()
         identique = 1
-        data_send =  {'latitude': 0, 'longitude': 0 , 'date':0, 'pourcentage':0, 'index': 0}
+        data_send =  {'latitude': -1, 'longitude': -1 , 'date':0, 'pourcentage':0, 'index': 0}
         min_compt = 10000000
         index_min_compt = 1000
         index = -1
         for picture in pictures:
-            index += 0
+            index += 1
             identique = 1
             compt = 0
             if index < len(pictures) - 1:
@@ -236,7 +241,7 @@ def create_app(test_config=None):
 
         if (data_sal is not None):
             last_id = data_sal.salamandre_id
-            print(min_compt)
+            print("Min compte ", min_compt)
             nombre_tab = len(tab2)*len(tab2) - 111
             #print(1-(min_compt/nombre_tab))*100
             pourcentage = round((1-(min_compt/nombre_tab))*100,2)
@@ -336,8 +341,8 @@ def create_app(test_config=None):
                 print(type(picture.file))
                 file = picture.file
                 #print(file)
-                with open(file,'rb') as f:
-                    return Response(f.read(), mimetype= 'image/jpeg')
+                #with open(file,'rb') as f:
+                return Response(file, mimetype= 'image/jpeg')
 
 
         #return send_file(io.BytesIO(file), mimetype='image/jpeg')
