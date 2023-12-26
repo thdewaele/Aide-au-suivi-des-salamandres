@@ -29,19 +29,19 @@ axios.get('http://127.0.0.1:5000/getlast')
 
 
         showPosition() {
+            console.log('Bouton cliqué');
+            console.log("latitude: ", lat, 'longitude: ', long);
             if (lat !==0 && long !==0){
                 let mapContainer = document.querySelector("#map")
             mapContainer.style.display = "block"
 
             const map = L.map("map").setView([lat, long], 13)
-            const tiles = L.tileLayer(
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {
-                    maxZoom: 19,
-                    attribution:
-                        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }
-            ).addTo(map)
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mymap);
+
+            console.log(map);
 
             const marker = L.marker([lat, long]).addTo(map)
             } else {
@@ -55,3 +55,4 @@ showPosition.addEventListener("click", function (e) {
     e.preventDefault()
     new Geolocation().showPosition()
 })
+

@@ -342,7 +342,7 @@ def create_app(test_config=None):
                 file = picture.file
                 #print(file)
                 #with open(file,'rb') as f:
-                return Response(file, mimetype= 'image/jpeg')
+                return Response(file, mimetype= 'image/jpg')
 
 
         #return send_file(io.BytesIO(file), mimetype='image/jpeg')

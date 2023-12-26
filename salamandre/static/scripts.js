@@ -325,16 +325,23 @@ tabcomplet.addEventListener("click",function (e) {
                         });
                         //console.log(response.data);
                         var image = new Image();
+                        var canvas = document.getElementById("target");
+                        var ctx = canvas.getContext("2d");
                         console.log(image);
+                        image.src = URL.createObjectURL(blob);
                         image.onload = function () {
-                            var canvas = document.getElementById("target");
+                            //var canvas = document.getElementById("target");
                             canvas.width = image.width;
                             canvas.height = image.height;
+                            ctx.drawImage(image,0,0);
                             console.log('On image.onload');
-                            var target = canvas.getContext("2d");
-                            target.drawImage(image, 0, 0);
-                        }
-                        image.src = URL.createObjectURL(blob);
+                            //var target = canvas.getContext("2d");
+                             //target.drawImage(image, 0, 0);
+                        };
+                        image.onerror = function () {
+                            console.error("Erreur lors du chargement de l'image.", this.src);
+                        };
+
                     })
                     .catch(error=>{
                         console.error('Erreur lors de la récupération de l\' image: ', error);

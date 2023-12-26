@@ -1,6 +1,7 @@
 
 import cv2
 import numpy as np
+from Segmentation import segmentation
 
 def image_moment(img,ero):
 
@@ -122,26 +123,11 @@ def printable(tab):
 
 
 if __name__ == '__main__':
-    tab1,tabcoor = image_moment('../content/prediction_img/segmented_img8.png',0)
-    tab2, tabcoor2 = image_moment('../content/prediction_img/segmented_img8.png', 1)
+   msk,sgmt = segmentation("../images/003.JPG")
 
-    tab3 = fusiontab(tab1,tab2)
-    result_comp, list =  comptagediff(tab1,tab2)
-    print("Tableau avec erosion et fusion identique : ",comparasiontab(tab2, tab3) )
-    print("Nombre de difference entre t1 et t2 = ", result_comp)
-    print(list)
-    image = cv2.imread("../content/prediction_img/segmented_img7.png")
-    liste_coord = []
-    for i in list:
-       liste_coord.append(tabcoor[i[0]][i[1]])
-    print(liste_coord)
+   tab1, tabcoor = image_moment("image.jpg",0)
 
-    for coord in liste_coord:
-       x,y= coord
-       cv2.circle(image,(x,y),3, (0,0,255), -1)
-    cv2.imshow('Image avec cercles', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
 
 
 
