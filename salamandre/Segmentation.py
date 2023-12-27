@@ -256,7 +256,7 @@ def non_stretching_resize(img ,cmap ,desired_size=512):
 
     img_array = np.asarray(new_im) / 255.
     return new_im
-def run_trained_model(path_model=None,path_image=None,return_result=False):
+def run_trained_model(path_model=None,path_image=None,return_result=False, plot_result=False):
     """
         run_trained_model runs the inference of the trained model on the chosen image.
         path_model: if the parameter is provided the model is loaded from that path; if path_model is set to None the default model is loaded
@@ -266,7 +266,7 @@ def run_trained_model(path_model=None,path_image=None,return_result=False):
     print("Je passe de run_trained_model")
 
     # Load the saved model and specify the custom loss function
-    path_model = "u_net_upright_data-2.h5"
+    path_model = "salamandre/u_net_upright_data-2.h5"
     if path_model == None:
         default_model_path="u_net_upright_data-2.h5"
         with tf.keras.utils.custom_object_scope({'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef}):
@@ -275,7 +275,7 @@ def run_trained_model(path_model=None,path_image=None,return_result=False):
         with tf.keras.utils.custom_object_scope({'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef}):
             loaded_model = load_model(path_model)
     #load the image
-
+    """
     if path_image==None:
         default_image_path="../images/003.JPG"
         original = Image.open(default_image_path)
@@ -286,7 +286,11 @@ def run_trained_model(path_model=None,path_image=None,return_result=False):
         original = Image.open(path_image)
         original = np.asarray(non_stretching_resize(original, "RGB",256)) / 255.
         original = np.array(original)
-
+        
+    """
+    original = Image.open(path_image)
+    original = np.asarray(non_stretching_resize(original, "RGB",256)) / 255.
+    original = np.array(original)
 
     mask = loaded_model.predict(np.expand_dims(original, axis=0))
 
@@ -305,34 +309,35 @@ def run_trained_model(path_model=None,path_image=None,return_result=False):
      #   original.shape, segmented.shape, mask.shape, binary_mask.shape))
 
     ##### Plot the results like in the notebook
-    plt.imshow(filtered_segmented,cmap="gray")
-    plt.show()
+    if (plot_result):
+        plt.imshow(filtered_segmented,cmap="gray")
+        plt.show()
 
-    fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(8, 6))
 
-    plt.subplot(1, 4, 1)
-    plt.imshow(np.squeeze(original))
-    plt.title("image")
-    plt.axis("off")
+        plt.subplot(1, 4, 1)
+        plt.imshow(np.squeeze(original))
+        plt.title("image")
+        plt.axis("off")
 
-    plt.subplot(1, 4, 2)
-    plt.imshow(filtered_segmented, cmap="gray")
-    plt.title("salamandre")
-    plt.axis("off")
+        plt.subplot(1, 4, 2)
+        plt.imshow(filtered_segmented, cmap="gray")
+        plt.title("salamandre")
+        plt.axis("off")
 
-    plt.subplot(1, 4, 3)
-    plt.imshow(binary_mask, cmap="gray")
-    plt.title("binary mask")
-    plt.axis("off")
+        plt.subplot(1, 4, 3)
+        plt.imshow(binary_mask, cmap="gray")
+        plt.title("binary mask")
+        plt.axis("off")
 
-    plt.subplot(1, 4, 4)
-    plt.imshow(mask, cmap="gray")
-    plt.title("mask")
-    plt.axis("off")
+        plt.subplot(1, 4, 4)
+        plt.imshow(mask, cmap="gray")
+        plt.title("mask")
+        plt.axis("off")
 
-    fig.tight_layout()
-    plt.show()
-    plt.close()
+        fig.tight_layout()
+        plt.show()
+        plt.close()
 
     if return_result:
         return binary_mask,filtered_segmented

@@ -55,6 +55,114 @@ BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'p
     console.log(anwser);
 });
 
+var button_tab = document.getElementById("pretab");
+button_tab.addEventListener("click", function (){
+    axios.get('http://127.0.0.1:5000/getTable')
+        .then(function(response){
+            const data = response.data;
+            const donnees= data["table"];
+            const tab = donnees[0]
+            console.log(donnees)
+            console.log(tab)
+            const tableauHTML = document.getElementById('tableau');
+
+            console.log(tab.length);
+            console.log(tab[1].length);
+            const element1 = tab[1][7];
+            console.log(element1);
+            const element2 = tab[1][8];
+            const element3 = element2+element1;
+            console.log(element3);
+            const cellule1 = document.getElementById('cellule1');
+            cellule1.querySelector('input[type="text"]').value= tab[0][6]+tab[0][7];
+            const cellule2 = document.getElementById('cellule2');
+            cellule2.querySelector('input[type="text"]').value= tab[1][5];
+            const cellule3 = document.getElementById('cellule3');
+            cellule3.querySelector('input[type="text"]').value= tab[1][8];
+            const cellule4 = document.getElementById('cellule4');
+            cellule4.querySelector('input[type="text"]').value= tab[1][6];
+            const cellule5 = document.getElementById('cellule5');
+            cellule5.querySelector('input[type="text"]').value= tab[1][7];
+            const cellule6 = document.getElementById('cellule6');
+            cellule6.querySelector('input[type="text"]').value= tab[2][5];
+            const cellule7 = document.getElementById('cellule7');
+            cellule7.querySelector('input[type="text"]').value= tab[2][6];
+            const cellule8 = document.getElementById('cellule8');
+            cellule8.querySelector('input[type="text"]').value= tab[2][7];
+            const cellule9 = document.getElementById('cellule9');
+            cellule9.querySelector('input[type="text"]').value= tab[2][8];
+            const cellule10 = document.getElementById('cellule10');
+            cellule10.querySelector('input[type="text"]').value= tab[3][6];
+            const cellule11 = document.getElementById('cellule11');
+            cellule11.querySelector('input[type="text"]').value= tab[3][7];
+            const cellule12 = document.getElementById('cellule12');
+            cellule12.querySelector('input[type="text"]').value= tab[4][2];
+            const cellule13 = document.getElementById('cellule13');
+            cellule13.querySelector('input[type="text"]').value= tab[4][3];
+            const cellule14 = document.getElementById('cellule14');
+            cellule14.querySelector('input[type="text"]').value= tab[4][4];
+            const cellule15 = document.getElementById('cellule15');
+            cellule15.querySelector('input[type="text"]').value= tab[4][8];
+            const cellule16 = document.getElementById('cellule16');
+            cellule16.querySelector('input[type="text"]').value= tab[4][9];
+            const cellule17 = document.getElementById('cellule17');
+            cellule17.querySelector('input[type="text"]').value= tab[4][10];
+            const cellule18 = document.getElementById('cellule18');
+            cellule18.querySelector('input[type="text"]').value= tab[4][5];
+            const cellule19 = document.getElementById('cellule19');
+            cellule19.querySelector('input[type="text"]').value= tab[4][6];
+            const cellule20 = document.getElementById('cellule20');
+            cellule20.querySelector('input[type="text"]').value= tab[4][7];
+            const cellule21 = document.getElementById('cellule21');
+            cellule21.querySelector('input[type="text"]').value= tab[5][5];
+            const cellule22 = document.getElementById('cellule22');
+            cellule22.querySelector('input[type="text"]').value= tab[5][6];
+            const cellule23 = document.getElementById('cellule23');
+            cellule23.querySelector('input[type="text"]').value= tab[5][7];
+            const cellule24 = document.getElementById('cellule24');
+            cellule24.querySelector('input[type="text"]').value= tab[6][5];
+            const cellule25 = document.getElementById('cellule25');
+            cellule25.querySelector('input[type="text"]').value= tab[6][6];
+            const cellule26 = document.getElementById('cellule26');
+            cellule26.querySelector('input[type="text"]').value= tab[6][7];
+            const cellule27 = document.getElementById('cellule27');
+            cellule27.querySelector('input[type="text"]').value= tab[7][5];
+            const cellule28 = document.getElementById('cellule28');
+            cellule28.querySelector('input[type="text"]').value= tab[7][6];
+            const cellule29 = document.getElementById('cellule29');
+            cellule29.querySelector('input[type="text"]').value= tab[7][7];
+            const cellule30 = document.getElementById('cellule30');
+            cellule30.querySelector('input[type="text"]').value= tab[8][5];
+            const cellule31 = document.getElementById('cellule31');
+            cellule31.querySelector('input[type="text"]').value= tab[8][6];
+            const cellule32 = document.getElementById('cellule32');
+            cellule32.querySelector('input[type="text"]').value= tab[8][7];
+            const cellule33 = document.getElementById('cellule33');
+            cellule33.querySelector('input[type="text"]').value= tab[8][1];
+            const cellule34 = document.getElementById('cellule34');
+            cellule34.querySelector('input[type="text"]').value= tab[8][2];
+            const cellule35 = document.getElementById('cellule35');
+            cellule35.querySelector('input[type="text"]').value= tab[8][3];
+             const cellule36 = document.getElementById('cellule36');
+            cellule36.querySelector('input[type="text"]').value= tab[8][4];
+             const cellule37 = document.getElementById('cellule37');
+            cellule37.querySelector('input[type="text"]').value= tab[8][8];
+            const cellule38 = document.getElementById('cellule38');
+            cellule38.querySelector('input[type="text"]').value= tab[8][9];
+             const cellule39 = document.getElementById('cellule39');
+            cellule39.querySelector('input[type="text"]').value= tab[8][10];
+             const cellule40 = document.getElementById('cellule40');
+            cellule40.querySelector('input[type="text"]').value= tab[8][1];
+            const elem = tab[9][6]+tab[9][7]+ tab[10][6]+tab[10][7]+ tab[11][6]+tab[11][7]+ tab[12][6]+tab[12][7]+ tab[13][6]+tab[13][7];
+            const cellule41 = document.getElementById('cellule41');
+            cellule41.querySelector('input[type="text"]').value = elem;
+
+
+
+
+        });
+});
+
 
 
 

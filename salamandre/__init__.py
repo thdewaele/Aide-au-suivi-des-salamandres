@@ -20,6 +20,8 @@ from salamandre.accueil import accueil
 from salamandre.exif_data import get_exif_data
 from salamandre.img import get_gpsinfo
 from salamandre.index import index
+from salamandre.Segmentation import segmentation
+from salamandre.image_moments import get_table
 from datetime import datetime
 
 
@@ -82,11 +84,13 @@ def create_app(test_config=None):
 
         latitude, longitude = get_gpsinfo(file2)
         date_exif = get_exif_data(file2)
+        table = get_table(file2)
+        print(table)
 
 
 
-        data = Pictures(dataset.name, file, longitude, latitude, 0, date_exif,size,None, None)
-
+        data = Pictures(dataset.name, file, longitude, latitude, 0, date_exif,size,table, None)
+        print(data)
         db.session.add(data)
         db.session.commit()
 
@@ -95,6 +99,16 @@ def create_app(test_config=None):
             'long': longitude,
             'focal' : 0,
             'filename': filename
+        }
+        return Response(json.dumps(answer), mimetype='application/json')
+
+    @app.route("/getTable", methods=['GET'])
+    def gettable():
+        data = Pictures.query.order_by(Pictures.id.desc()).first()
+        table = data.identification
+        print(table)
+        answer ={
+            'table': table
         }
         return Response(json.dumps(answer), mimetype='application/json')
 
