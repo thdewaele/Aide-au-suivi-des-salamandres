@@ -144,6 +144,8 @@ def create_app(test_config=None):
 
         tab = dataset.get('tableau')
         pourc = dataset.get('pourc')
+        if pourc == None:
+            pourc = 95
         print("Pourcentage : ", pourc)
         maxlength = 0
         length = len(tab)

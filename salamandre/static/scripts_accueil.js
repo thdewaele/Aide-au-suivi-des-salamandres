@@ -39,7 +39,7 @@ axios.get('http://127.0.0.1:5000/getlast')
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 maxZoom: 18,
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(mymap);
+            }).addTo(map);
 
             console.log(map);
 

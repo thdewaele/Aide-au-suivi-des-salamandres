@@ -32,9 +32,9 @@
                 <th> Filename</th>
                 <th> Latitude</th>
                 <th> Longitude</th>
-                <th> Focal</th>
                 <th> Date</th>
                 <th> Taille de la salamandre</th>
+                <th> Salamandre ID</th>
             </tr>
         </thread>
         <tbody>
@@ -44,9 +44,9 @@
                     <td>{{ salamandre.filename}}</td>
                     <td>{{ salamandre.latitude }}</td>
                      <td>{{ salamandre.longitude }}</td>
-                    <td>{{ salamandre.focal }}</td>
                     <td>{{ salamandre.date }}</td>
                     <td>{{ salamandre.size }}</td>
+                    <td>{{ salamandres.salamandre_id }}</td>
                 </tr>
             {% endfor %}
         </tbody>

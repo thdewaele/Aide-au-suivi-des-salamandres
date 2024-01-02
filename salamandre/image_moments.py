@@ -46,9 +46,9 @@ def image_moment(img,ero):
    epaisseur_lignes = 1
    for y in range(0, hauteur_image, espacement_vertical):
       ligne = []
-      cv2.line(image, (0, y), (largeur_image, y), couleur_lignes, epaisseur_lignes)
+    #  cv2.line(image, (0, y), (largeur_image, y), couleur_lignes, epaisseur_lignes)
       for x in range(0, largeur_image, espacement_horizontal):
-         cv2.line(image, (x, 0), (x, hauteur_image), couleur_lignes, epaisseur_lignes)
+     #    cv2.line(image, (x, 0), (x, hauteur_image), couleur_lignes, epaisseur_lignes)
          ligne.append((x,y))
       tab_coordonnees.append(ligne)
    image_contour = cv2.drawContours(image, contours, -1, (0, 0, 255), 2)
@@ -56,7 +56,7 @@ def image_moment(img,ero):
    cv2.waitKey(0)
    cv2.destroyAllWindows()
    """
-   return tab_taches,
+   return tab_taches
 def comptagediff(tab1, tab2):
    compt =0
    list_ind = []
@@ -104,11 +104,11 @@ def get_table(image):
 
 
 if __name__ == '__main__':
-   msk,sgmt = segmentation("../images/003.JPG")
+   msk,sgmt = segmentation("../images/301.JPG")
 
-   tab1= image_moment("image.jpg",0)
-   image_moment('../content/prediction_img/003.JPG',0)
-   printable(tab1)
+   tab1= image_moment("image.jpg",1)
+   image_moment('../content/prediction_img/010.JPG',1)
+   #printable(tab1)
 
 
 
