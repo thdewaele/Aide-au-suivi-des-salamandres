@@ -263,7 +263,7 @@ def run_trained_model(path_model=None,path_image=None,return_result=False, plot_
         path_image:if the parameter is provided the image is loaded from that path; if path_image is set to None the default image is loaded
         return_result: if False the segmented salamander is displayed but not returned; if True the function returns the predicted mask and segmented body
     """
-    print("Je passe de run_trained_model")
+
 
     # Load the saved model and specify the custom loss function
     path_model = "salamandre/u_net_upright_data-2.h5"
@@ -759,7 +759,7 @@ def affine_transform_msk_sgmnt(msk, sgm):
     """
     affine_transform_msk_sgmnt runs the affine transformation operations on msk and sgm and returns the resulting images
     """
-    print('Je suis là')
+
     # rotate image
     rotated_msk = apply_rotate_img(msk)
     rotated_sgm = replicate_rotate(sgm, msk)

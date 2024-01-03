@@ -7,7 +7,7 @@ import io
 
 import psycopg2
 from flask import Flask, jsonify, request, Blueprint, Response
-
+from flask_cors import CORS
 from flask import Flask, render_template, request, flash,send_file
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -22,6 +22,7 @@ from salamandre.img import get_gpsinfo
 from salamandre.index import index
 from salamandre.Segmentation import segmentation
 from salamandre.image_moments import get_table
+
 from datetime import datetime
 
 
@@ -30,7 +31,7 @@ size = 0
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True, static_folder="static", static_url_path="/static")
-
+    cors = CORS(app, resources={r"/get_image": {"origins": "http://127.0.0.1:5000/"}})
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:doisneau@localhost/Salamandre_webapp'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = 'secret string'
@@ -85,12 +86,11 @@ def create_app(test_config=None):
         latitude, longitude = get_gpsinfo(file2)
         date_exif = get_exif_data(file2)
         table = get_table(file2)
-        print(table)
 
 
 
         data = Pictures(dataset.name, file, longitude, latitude, 0, date_exif,size,table, None)
-        print(data)
+
         db.session.add(data)
         db.session.commit()
 
@@ -106,7 +106,7 @@ def create_app(test_config=None):
     def gettable():
         data = Pictures.query.order_by(Pictures.id.desc()).first()
         table = data.identification
-        print(table)
+
         answer ={
             'table': table
         }
@@ -146,7 +146,7 @@ def create_app(test_config=None):
         pourc = dataset.get('pourc')
         if pourc == None:
             pourc = 95
-        print("Pourcentage : ", pourc)
+
         maxlength = 0
         length = len(tab)
 
@@ -247,7 +247,7 @@ def create_app(test_config=None):
 
                     #Modif pour récuperer l'identification de avec la plus grande similitude.
 
-        print('index_min_compt = ', index_min_compt)
+
 
         salamandre_ajoutee = Pictures.query.order_by(Pictures.id.desc()).first()
 
@@ -257,11 +257,11 @@ def create_app(test_config=None):
 
         if (data_sal is not None):
             last_id = data_sal.salamandre_id
-            print("Min compte ", min_compt)
+
             nombre_tab = len(tab2)*len(tab2) - 111
-            #print(1-(min_compt/nombre_tab))*100
+
             pourcentage = round((1-(min_compt/nombre_tab))*100,2)
-            print(pourcentage)
+
             if (pourcentage >= pourc):
                 index = 0
                 for   picture in pictures:
@@ -302,7 +302,7 @@ def create_app(test_config=None):
                             element.nbre_obs +=1
                             db.session.commit()
 
-                        print("Indice envoyé: ", index)
+
                         data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage, 'index' : index}
 
                         break
@@ -322,7 +322,7 @@ def create_app(test_config=None):
                 element.last_long = salamandre_ajoutee.longitude
                 element.last_obs = salamandre_ajoutee.date
                 db.session.commit()
-                print("sal ajouté +1")
+
         else:
 
             salamandre_ajoutee.salamandre_id = 1
@@ -349,34 +349,39 @@ def create_app(test_config=None):
         dataset = request.args.get("index")
         #indice = dataset.get('index')
         indice = int(dataset)
-        print("Indice reçu: ", indice)
+
 
         pictures = Pictures.query.all()
         for index, picture in enumerate(pictures):
             if (index == indice):
-                print(type(picture.file))
+
                 file = picture.file
-                #print(file)
+                break
                 #with open(file,'rb') as f:
-                return Response(file, mimetype= 'image/jpg')
 
+        image = Image.open(io.BytesIO(file))
+        #image.show()
+        #return Response(file, mimetype= 'image/jpeg')
 
-        #return send_file(io.BytesIO(file), mimetype='image/jpeg')
+        img_byte_array = io.BytesIO()
+        image.save(img_byte_array, format='JPEG')
+        img_byte_array.seek(0)
+
+        # Retourner les données binaires de l'image en tant que réponse avec le type MIME 'image/jpeg'
+        return send_file(img_byte_array, mimetype='image/jpeg')
 
 
     # image = Image.open(BytesIO(image_data))
 
 
-
-
-    """
     @app.route('/getdata', methods=['GET'])
     def getalldata():
         pictures = Pictures.query.all()
-        data = [{'id':salamandre.id, 'filename': salamandre.filename, 'file': salamandre.file, 'latitude': salamandre.latitude, 'longitude': salamandre.longitude, 'focal': salamandre.focal, 'date':salamandre.date, 'size': salamandre.size} for salamandre in pictures]
-        return jsonify(data, default = custom_json_serializer)
+        data = [{'id':salamandre.id, 'filename': salamandre.filename, 'latitude': salamandre.latitude, 'longitude': salamandre.longitude, 'focal': salamandre.focal, 'date':salamandre.date, 'size': salamandre.size, 'salamandre_id': salamandre.salamandre_id} for salamandre in pictures]
+        serialized_data = json.dumps(data, default=custom_json_serializer)
+        return serialized_data
 
-"""
+
 
 
     from . import img

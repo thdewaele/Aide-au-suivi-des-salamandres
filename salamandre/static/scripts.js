@@ -61,11 +61,13 @@ button_tab.addEventListener("click", function (){
         .then(function(response){
             const data = response.data;
             const donnees= data["table"];
-            const tab = donnees[0]
+            //const tab = donnees[0]
             console.log(donnees)
-            console.log(tab)
+            //console.log(tab)
             const tableauHTML = document.getElementById('tableau');
-
+            console.log(donnees.length);
+            console.log(donnees[0]);
+            const tab = donnees;
             console.log(tab.length);
             console.log(tab[1].length);
             const element1 = tab[1][7];
@@ -76,27 +78,27 @@ button_tab.addEventListener("click", function (){
             const cellule1 = document.getElementById('cellule1');
             cellule1.querySelector('input[type="text"]').value= tab[0][6]+tab[0][7];
             const cellule2 = document.getElementById('cellule2');
-            cellule2.querySelector('input[type="text"]').value= tab[1][5];
+            cellule2.querySelector('input[type="text"]').value= tab[1][5]+tab[1][4];
             const cellule3 = document.getElementById('cellule3');
-            cellule3.querySelector('input[type="text"]').value= tab[1][8];
+            cellule3.querySelector('input[type="text"]').value= tab[1][8]+tab[1][9];
             const cellule4 = document.getElementById('cellule4');
             cellule4.querySelector('input[type="text"]').value= tab[1][6];
             const cellule5 = document.getElementById('cellule5');
             cellule5.querySelector('input[type="text"]').value= tab[1][7];
             const cellule6 = document.getElementById('cellule6');
-            cellule6.querySelector('input[type="text"]').value= tab[2][5];
+            cellule6.querySelector('input[type="text"]').value= tab[2][5]+tab[2][4];
             const cellule7 = document.getElementById('cellule7');
             cellule7.querySelector('input[type="text"]').value= tab[2][6];
             const cellule8 = document.getElementById('cellule8');
             cellule8.querySelector('input[type="text"]').value= tab[2][7];
             const cellule9 = document.getElementById('cellule9');
-            cellule9.querySelector('input[type="text"]').value= tab[2][8];
+            cellule9.querySelector('input[type="text"]').value= tab[2][8]+tab[2][9];
             const cellule10 = document.getElementById('cellule10');
-            cellule10.querySelector('input[type="text"]').value= tab[3][6];
+            cellule10.querySelector('input[type="text"]').value= tab[3][6]+tab[3][5];
             const cellule11 = document.getElementById('cellule11');
-            cellule11.querySelector('input[type="text"]').value= tab[3][7];
+            cellule11.querySelector('input[type="text"]').value= tab[3][7]+tab[3][8];
             const cellule12 = document.getElementById('cellule12');
-            cellule12.querySelector('input[type="text"]').value= tab[4][2];
+            cellule12.querySelector('input[type="text"]').value= tab[4][2]+tab[4][1];
             const cellule13 = document.getElementById('cellule13');
             cellule13.querySelector('input[type="text"]').value= tab[4][3];
             const cellule14 = document.getElementById('cellule14');
@@ -114,23 +116,23 @@ button_tab.addEventListener("click", function (){
             const cellule20 = document.getElementById('cellule20');
             cellule20.querySelector('input[type="text"]').value= tab[4][7];
             const cellule21 = document.getElementById('cellule21');
-            cellule21.querySelector('input[type="text"]').value= tab[5][5];
+            cellule21.querySelector('input[type="text"]').value= tab[5][5]+tab[5][4];
             const cellule22 = document.getElementById('cellule22');
             cellule22.querySelector('input[type="text"]').value= tab[5][6];
             const cellule23 = document.getElementById('cellule23');
-            cellule23.querySelector('input[type="text"]').value= tab[5][7];
+            cellule23.querySelector('input[type="text"]').value= tab[5][7]+tab[5][8];
             const cellule24 = document.getElementById('cellule24');
-            cellule24.querySelector('input[type="text"]').value= tab[6][5];
+            cellule24.querySelector('input[type="text"]').value= tab[6][5]+tab[6][4];
             const cellule25 = document.getElementById('cellule25');
             cellule25.querySelector('input[type="text"]').value= tab[6][6];
             const cellule26 = document.getElementById('cellule26');
-            cellule26.querySelector('input[type="text"]').value= tab[6][7];
+            cellule26.querySelector('input[type="text"]').value= tab[6][7]+tab[6][8];
             const cellule27 = document.getElementById('cellule27');
-            cellule27.querySelector('input[type="text"]').value= tab[7][5];
+            cellule27.querySelector('input[type="text"]').value= tab[7][5]+tab[7][4];
             const cellule28 = document.getElementById('cellule28');
             cellule28.querySelector('input[type="text"]').value= tab[7][6];
             const cellule29 = document.getElementById('cellule29');
-            cellule29.querySelector('input[type="text"]').value= tab[7][7];
+            cellule29.querySelector('input[type="text"]').value= tab[7][7]+tab[7][8];
             const cellule30 = document.getElementById('cellule30');
             cellule30.querySelector('input[type="text"]').value= tab[8][5];
             const cellule31 = document.getElementById('cellule31');
@@ -424,61 +426,71 @@ tabcomplet.addEventListener("click",function (e) {
         });
     document.getElementById("download").addEventListener("click",function (){
         return axios.get('http://127.0.0.1:5000/get_image', {
-                    params: {index: indice}
+                    params: {index: indice},
+                    responseType: 'blob'
                 })
                     .then(function (response) {
                         console.log("Hello");
-                        const blob = new Blob([response.data], {
-                            type: response.headers["content-type"]
-                        });
-                        //console.log(response.data);
-                        var image = new Image();
-                        var canvas = document.getElementById("target");
-                        var ctx = canvas.getContext("2d");
-                        console.log(image);
-                        image.src = URL.createObjectURL(blob);
-                        image.onload = function () {
-                            //var canvas = document.getElementById("target");
-                            canvas.width = image.width;
-                            canvas.height = image.height;
-                            ctx.drawImage(image,0,0);
-                            console.log('On image.onload');
-                            //var target = canvas.getContext("2d");
-                             //target.drawImage(image, 0, 0);
-                        };
-                        image.onerror = function () {
-                            console.error("Erreur lors du chargement de l'image.", this.src);
-                        };
 
+                        const blob = response.data;
+                        if (blob instanceof Blob) {
+                          const imageUrl = URL.createObjectURL(blob);
+                          const image = new Image();
+
+                          image.onload = function () {
+                              const canvas = document.getElementById("target");
+                              canvas.width = image.width;
+                              canvas.height = image.height;
+                              const ctx = canvas.getContext("2d");
+                              ctx.drawImage(image, 0, 0);
+                          };
+                          image.src = imageUrl;
+
+                          image.onerror = function () {
+                              console.error("Erreur lors du chargement de l'image.", this.src);
+                          };
+                        }
                     })
                     .catch(error=>{
                         console.error('Erreur lors de la récupération de l\' image: ', error);
                      });
     });
-            //if (indice >= 0) {
-
-                     /*
-                     .then(response => {
-                         console.log(response.data);
-                         const blob = new Blob([response.data], { type: 'image/jpeg' });
-                         const imageURL = URL.createObjectURL(blob);
-                         imageAffichee.src = imageURL;
-                     })
-
-                      */
-
-            //}
-
-
-
-
 
 
     console.log(tab);
 
 
 });
+/*
+                        const blob = new Blob([response.data], {
+                            type: response.headers["content-type"]
+                        });
+                        //console.log(response.data);
+                        console.log(blob);
+                        var image = new Image();
+                        var canvas = document.getElementById("target");
+                        var ctx = canvas.getContext("2d");
+                        console.log(ctx);
+                        console.log(image);
+                        image.src = URL.createObjectURL(blob);
+                        console.log(image.src);
+                        canvas.width = image.width;
+                        canvas.height = image.height;
+                        console.log(canvas.width);
+                        console.log(canvas.height);
+                        image.onload = function () {
+                            //var canvas = document.getElementById("target");
 
+                            ctx.drawImage(image,0,0);
+                            console.log('On image.onload');
+                            //var target = canvas.getContext("2d");
+                             //target.drawImage(image, 0, 0);
+
+
+
+                        };
+
+                         */
 
 
 
