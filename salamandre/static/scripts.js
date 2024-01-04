@@ -354,7 +354,7 @@ drawpiecefin.addEventListener("click",function (e){
 
     }
 });
-
+var indice_sim = -1;
 const tabcomplet= document.querySelector("#tableaumandel");
 tabcomplet.addEventListener("click",function (e) {
      document.getElementById("fin_encodage").innerHTML = "Encodage ajouté à la db";
@@ -414,24 +414,20 @@ tabcomplet.addEventListener("click",function (e) {
             date = data['date'];
             indice = data['index'];
             pourcentage = data['pourcentage'];
-            if (lat >0 && long > 0) {
-                document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à " + pourcentage + "% a été observée le " + date + "à cette position: latitude: " + lat + ", longitude: " + long;
-            } else if (lat==0 && long==0){
-                document.getElementById('salsimilaire').innerHTML='Une salamandre similaire à ' + pourcentage + '% a été obervée le ' + date + " mais les données de positions ne sont pas disponibles";
-            }
-            console.log(indice);
-        })
-        .catch(function (error){
-            console.error(error)
-        });
-    document.getElementById("download").addEventListener("click",function (){
-        return axios.get('http://127.0.0.1:5000/get_image', {
+            if (indice>0){
+                if (lat >0 && long > 0) {
+                    document.getElementById("salsimilaire").innerHTML = "Une salamandre similaire à " + pourcentage + "% a été observée le " + date + "à cette position: latitude: " + lat + ", longitude: " + long;
+                } else if (lat==0 && long==0){
+                    document.getElementById('salsimilaire').innerHTML='Une salamandre similaire à ' + pourcentage + '% a été obervée le ' + date + " mais les données de positions ne sont pas disponibles";
+                }
+                indice_sim = indice;
+                return axios.get('http://127.0.0.1:5000/get_image', {
                     params: {index: indice},
                     responseType: 'blob'
                 })
                     .then(function (response) {
-                        console.log("Hello");
 
+                        document.getElementById("fin_identification").innerHTML ="Photo de la salamandre similaire";
                         const blob = response.data;
                         if (blob instanceof Blob) {
                           const imageUrl = URL.createObjectURL(blob);
@@ -442,7 +438,7 @@ tabcomplet.addEventListener("click",function (e) {
                               canvas.width = image.width;
                               canvas.height = image.height;
                               const ctx = canvas.getContext("2d");
-                              ctx.drawImage(image, 0, 0);
+                              ctx.drawImage(image, 0, 0, 500, 500);
                           };
                           image.src = imageUrl;
 
@@ -454,13 +450,53 @@ tabcomplet.addEventListener("click",function (e) {
                     .catch(error=>{
                         console.error('Erreur lors de la récupération de l\' image: ', error);
                      });
-    });
+            }else{
+                document.getElementById("salsimilaire").innerHTML= "Aucune salamandre simalaire à "+ pourcentage +" n'a été observée";
+                return axios.post('http://127.0.0.1:5000/changeid',{
+                        indice: -1
+                    }).then(function (response) {
+                        var dataset = response.data;
+                        console.log(dataset["id"]);
 
-
+                    });
+                        }
+                        console.log(indice);
+                    })
+        .catch(function (error){
+            console.error(error)
+        });
     console.log(tab);
+    var valeur_sim = 0;
+
+    const btnsim = document.querySelector('#btnsim');
+    const simva = document.querySelector('#sim')
+    btnsim.onclick =(event)=>{
+        event.preventDefault();
+        valeur_sim = simva.value;
+        var indice_envoye = 0
+        console.log("Salamandre identique:", valeur_sim);
+        if (valeur_sim ==1){
+            indice_envoye = indice_sim;
+        }
+        else{
+            indice_envoye = -1;
+        }
+        axios.post('http://127.0.0.1:5000/changeid',{
+            indice: indice_envoye
+        }).then(function (response) {
+            var dataset = response.data;
+            console.log(dataset["id"]);
+            document.getElementById("fin_identification").innerHTML ="L'id de la salamandre a bien été modifié";
+        });
+
+}
 
 
 });
+
+
+
+
 /*
                         const blob = new Blob([response.data], {
                             type: response.headers["content-type"]

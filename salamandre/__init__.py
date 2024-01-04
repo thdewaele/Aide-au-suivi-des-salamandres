@@ -213,7 +213,7 @@ def create_app(test_config=None):
 
         pictures = Pictures.query.all()
         identique = 1
-        data_send =  {'latitude': -1, 'longitude': -1 , 'date':0, 'pourcentage':0, 'index': 0}
+        data_send =  {'latitude': -1, 'longitude': -1 , 'date':0, 'pourcentage':0, 'index': -1}
         min_compt = 10000000
         index_min_compt = 1000
         index = -1
@@ -272,7 +272,7 @@ def create_app(test_config=None):
                         latitude = picture.latitude
                         date = picture.date
                         id = picture.salamandre_id
-
+                        """
                         if (date != None):
                             date = date.isoformat()
                         if (id == None):
@@ -301,13 +301,14 @@ def create_app(test_config=None):
                             element.last_obs = salamandre_ajoutee.date
                             element.nbre_obs +=1
                             db.session.commit()
-
-
+                        """
+                        if (date != None):
+                            date = date.isoformat()
                         data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage, 'index' : index}
 
                         break
 
-
+            """
             else:
                 salamandre_ajoutee.salamandre_id= last_id+1
                 date1 = salamandre_ajoutee.date
@@ -322,6 +323,7 @@ def create_app(test_config=None):
                 element.last_long = salamandre_ajoutee.longitude
                 element.last_obs = salamandre_ajoutee.date
                 db.session.commit()
+            """
 
         else:
 
@@ -332,6 +334,7 @@ def create_app(test_config=None):
             long1 = salamandre_ajoutee.longitude
             data = Salamandre(1, date1, lat1, long1, 1)
 
+
             db.session.add(data)
             db.session.commit()
             element = Salamandre.query.order_by(Salamandre.id.desc()).first()
@@ -339,6 +342,75 @@ def create_app(test_config=None):
             element.last_long = salamandre_ajoutee.longitude
             element.last_obs = salamandre_ajoutee.date
             db.session.commit()
+
+
+
+
+        return Response(json.dumps(data_send), mimetype='application/json')
+
+    @app.route('/changeid',methods=['POST'])
+    def changeid():
+        dataset = request.get_json()
+        index = dataset['indice']
+        data_sal = Salamandre.query.order_by(Salamandre.id.desc()).first()
+        salamandre_ajoutee = Pictures.query.order_by(Pictures.id.desc()).first()
+        pictures = Pictures.query.all()
+        last_id = data_sal.salamandre_id
+        data_send = {'id':0}
+        print("indice: ",index)
+        if (index == -1):
+            salamandre_ajoutee.salamandre_id = last_id + 1
+            date1 = salamandre_ajoutee.date
+            id = last_id+1
+            data_send = {'id':id }
+            lat1 = salamandre_ajoutee.latitude
+            long1 = salamandre_ajoutee.longitude
+            data = Salamandre(last_id + 1, date1, lat1, long1, 1)
+            db.session.add(data)
+            db.session.commit()
+            element = Salamandre.query.order_by(Salamandre.id.desc()).first()
+            element.last_lat = salamandre_ajoutee.latitude
+            element.last_long = salamandre_ajoutee.longitude
+            element.last_obs = salamandre_ajoutee.date
+            db.session.commit()
+        else:
+
+            ind = 0
+            for picture in pictures:
+                ind += 1
+                if (ind == index):
+                    longitude = picture.longitude
+                    latitude = picture.latitude
+                    date = picture.date
+                    id = picture.salamandre_id
+                    print("id sal: ",id)
+                    data_send = {'id': id}
+
+                    if (id == None):
+                        picture.salamandre_id = last_id + 1
+                        salamandre_ajoutee.salamandre_id = last_id + 1
+                        db.session.commit()
+                        date1 = salamandre_ajoutee.date
+                        lat1 = salamandre_ajoutee.latitude
+                        long1 = salamandre_ajoutee.longitude
+                        data = Salamandre(picture.salamandre_id, date1, lat1, long1, 2)
+
+                        db.session.add(data)
+                        db.session.commit()
+                        element = Salamandre.query.order_by(Salamandre.id.desc()).first()
+                        element.last_lat = salamandre_ajoutee.latitude
+                        element.last_long = salamandre_ajoutee.longitude
+                        element.last_obs = salamandre_ajoutee.date
+                        db.session.commit()
+                    else:
+
+                        salamandre_ajoutee.salamandre_id = id
+                        element = db.session.query(Salamandre).filter(Salamandre.salamandre_id == id).first()
+                        element.last_lat = salamandre_ajoutee.latitude
+                        element.last_long = salamandre_ajoutee.longitude
+                        element.last_obs = salamandre_ajoutee.date
+                        element.nbre_obs += 1
+                        db.session.commit()
 
 
 

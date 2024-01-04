@@ -57,6 +57,7 @@
 
                 <div id = "picture" class="container">
                     <canvas id = "canvas"></canvas>
+
                     <img  id = "img"  src="" style="display:none"/>
                 </div>
 
@@ -329,11 +330,22 @@
 
 
         </center>
-        <button id = "download"> Afficher la salamandre</button>
-        <canvas id = "canvas2" ></canvas>
+        <center>
+
+        <br/>
+            <label for="sim">Choisissez la pièce</label>
+            <select name="sim" id="sim">
+                <option value = "1"> oui</option>
+                <option value = "2"> non</option>
+            </select>
+            <button  id="btnsim">Valider le choix</button>
+            <br/>
+            <p id = "fin_identification"></p>
          <div>
              <canvas id="target" ></canvas>
          </div>
+        </center>
+
         <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src ="../static/BestRendering.js"></script>
