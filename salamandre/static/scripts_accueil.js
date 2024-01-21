@@ -12,7 +12,7 @@ bouton2.addEventListener("click",function(){
 var lat = 0;
 var long =0;
 
-axios.get('http://127.0.0.1:5000/getlast')
+axios.get('/getlast')
     .then (function (response){
     console.log(response.data);
     var data = response.data;

@@ -31,8 +31,8 @@ size = 0
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True, static_folder="static", static_url_path="/static")
-    cors = CORS(app, resources={r"/get_image": {"origins": "http://127.0.0.1:5000/"}})
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:doisneau@localhost/Salamandre_webapp'
+   
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://app:app@localhost/app'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = 'secret string'
 

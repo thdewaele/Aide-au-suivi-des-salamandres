@@ -50,14 +50,14 @@ document.addEventListener('DOMContentLoaded',(ev)=> {
 
 
 
-BestRendering.InstallFileUploader('capture', 'http://127.0.0.1:5000/addpict', 'photo', function (response) {
+BestRendering.InstallFileUploader('capture', '/addpict', 'photo', function (response) {
     var anwser = BestRendering.ParseJsonFromBackendUpload(response.data);
     console.log(anwser);
 });
 
 var button_tab = document.getElementById("pretab");
 button_tab.addEventListener("click", function (){
-    axios.get('http://127.0.0.1:5000/getTable')
+    axios.get('/getTable')
         .then(function(response){
             const data = response.data;
             const donnees= data["table"];
@@ -199,7 +199,7 @@ button_tab.addEventListener("click", function (){
 const showPosition = document.querySelector("#showPosition")
 showPosition.addEventListener("click", function (e) {
     e.preventDefault()
-    axios.get('http://127.0.0.1:5000/getlast')
+    axios.get('/getlast')
     .then (function (response){
     console.log(response.data);
     var data = response.data;
@@ -344,7 +344,7 @@ drawpiecefin.addEventListener("click",function (e){
         document.getElementById("taille").innerHTML = "Estimation de la taille de la salamandre en cm: " + taille_cm;
         document.getElementById("ajoutdb").innerHTML ="Votre photo a bien été ajouté à la base de données";
         const taille = taille_cm;
-        axios.post('http://127.0.0.1:5000/addtaille', {
+        axios.post('/addtaille', {
             size: taille,
             filename: filename
         })
@@ -403,7 +403,7 @@ tabcomplet.addEventListener("click",function (e) {
 
 
     var indice = -1;
-    axios.post('http://127.0.0.1:5000/identification',{
+    axios.post('/identification',{
         tableau: tab, pourc : pourc
     })
         .then(function (response) {
@@ -421,7 +421,7 @@ tabcomplet.addEventListener("click",function (e) {
                     document.getElementById('salsimilaire').innerHTML='Une salamandre similaire à ' + pourcentage + '% a été obervée le ' + date + " mais les données de positions ne sont pas disponibles";
                 }
                 indice_sim = indice;
-                return axios.get('http://127.0.0.1:5000/get_image', {
+                return axios.get('/get_image', {
                     params: {index: indice},
                     responseType: 'blob'
                 })
@@ -452,7 +452,7 @@ tabcomplet.addEventListener("click",function (e) {
                      });
             }else{
                 document.getElementById("salsimilaire").innerHTML= "Aucune salamandre simalaire à "+ pourcentage +" n'a été observée";
-                return axios.post('http://127.0.0.1:5000/changeid',{
+                return axios.post('/changeid',{
                         indice: -1
                     }).then(function (response) {
                         var dataset = response.data;
@@ -481,7 +481,7 @@ tabcomplet.addEventListener("click",function (e) {
         else{
             indice_envoye = -1;
         }
-        axios.post('http://127.0.0.1:5000/changeid',{
+        axios.post('/changeid',{
             indice: indice_envoye
         }).then(function (response) {
             var dataset = response.data;
