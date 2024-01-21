@@ -412,8 +412,7 @@ def create_app(test_config=None):
 
 
 
-    from . import img
-    app.register_blueprint(img.bp)
+   
 
     #db.create_all()
     return app
