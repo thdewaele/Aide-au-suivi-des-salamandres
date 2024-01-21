@@ -1,4 +1,4 @@
-
+#Récupération fichiers Exif
 from datetime import datetime
 
 import image

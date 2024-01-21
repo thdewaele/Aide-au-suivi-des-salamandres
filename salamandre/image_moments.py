@@ -1,4 +1,4 @@
-
+#Méthode d'image moments
 import cv2
 import numpy as np
 from salamandre.Segmentation  import segmentation
@@ -37,25 +37,7 @@ def image_moment(img,ero):
                tab_taches[i][j]=2
             elif(tab_taches[i][j+1]==1):
                tab_taches[i][j]=2
-   """
-   tab_coordonnees =[]
-   largeur_image, hauteur_image, _ = image.shape
-   espacement_horizontal = 8
-   espacement_vertical = 8
-   couleur_lignes = (255, 255, 0)
-   epaisseur_lignes = 1
-   for y in range(0, hauteur_image, espacement_vertical):
-      ligne = []
-    #  cv2.line(image, (0, y), (largeur_image, y), couleur_lignes, epaisseur_lignes)
-      for x in range(0, largeur_image, espacement_horizontal):
-     #    cv2.line(image, (x, 0), (x, hauteur_image), couleur_lignes, epaisseur_lignes)
-         ligne.append((x,y))
-      tab_coordonnees.append(ligne)
-   image_contour = cv2.drawContours(image, contours, -1, (0, 0, 255), 2)
-   cv2.imshow('Contour de la forme', image_contour)
-   cv2.waitKey(0)
-   cv2.destroyAllWindows()
-   """
+
    return tab_taches
 def comptagediff(tab1, tab2):
    compt =0

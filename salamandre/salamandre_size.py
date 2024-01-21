@@ -1,4 +1,4 @@
-#Generate by chatGP on 30/01/2023
+#Test recuperation taille salamandre
 
 import cv2
 import numpy as np

@@ -136,7 +136,7 @@ def create_app(test_config=None):
 
         data_send = {'latitude': latitude, 'longitude': longitude}
         return jsonify(data_send)
-
+    #Verification identification identique
     @app.route('/identification', methods=['POST'])
     def add_identification():
 
@@ -272,58 +272,14 @@ def create_app(test_config=None):
                         latitude = picture.latitude
                         date = picture.date
                         id = picture.salamandre_id
-                        """
-                        if (date != None):
-                            date = date.isoformat()
-                        if (id == None):
-
-                            picture.salamandre_id = last_id + 1
-                            salamandre_ajoutee.salamandre_id = last_id + 1
-                            db.session.commit()
-                            date1 = salamandre_ajoutee.date
-                            lat1 = salamandre_ajoutee.latitude
-                            long1 = salamandre_ajoutee.longitude
-                            data = Salamandre(picture.salamandre_id,date1,lat1, long1, 2)
-
-                            db.session.add(data)
-                            db.session.commit()
-                            element = Salamandre.query.order_by(Salamandre.id.desc()).first()
-                            element.last_lat = salamandre_ajoutee.latitude
-                            element.last_long = salamandre_ajoutee.longitude
-                            element.last_obs = salamandre_ajoutee.date
-                            db.session.commit()
-                        else:
-
-                            salamandre_ajoutee.salamandre_id = id
-                            element = db.session.query(Salamandre).filter(Salamandre.salamandre_id== id).first()
-                            element.last_lat = salamandre_ajoutee.latitude
-                            element.last_long = salamandre_ajoutee.longitude
-                            element.last_obs = salamandre_ajoutee.date
-                            element.nbre_obs +=1
-                            db.session.commit()
-                        """
+                 
                         if (date != None):
                             date = date.isoformat()
                         data_send = {'latitude': latitude, 'longitude': longitude, 'date': date, 'pourcentage': pourcentage, 'index' : index}
 
                         break
 
-            """
-            else:
-                salamandre_ajoutee.salamandre_id= last_id+1
-                date1 = salamandre_ajoutee.date
-
-                lat1 = salamandre_ajoutee.latitude
-                long1 = salamandre_ajoutee.longitude
-                data = Salamandre(last_id+1, date1,lat1, long1, 1)
-                db.session.add(data)
-                db.session.commit()
-                element =Salamandre.query.order_by(Salamandre.id.desc()).first()
-                element.last_lat = salamandre_ajoutee.latitude
-                element.last_long = salamandre_ajoutee.longitude
-                element.last_obs = salamandre_ajoutee.date
-                db.session.commit()
-            """
+     
 
         else:
 
